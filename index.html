@@ -1,0 +1,3546 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>HALLOUYUN GROUP - V70 FIX HURUF M5</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#0c4a6e">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root {
+  --primary: #0c4a6e; --primary-light: #0284c7; --accent: #0ea5e9;
+  --green: #22c55e; --red: #ef4444;
+  --bg: linear-gradient(160deg,
+    #082f49 0%,
+    #0c4a6e 18%,
+    #0369a1 38%,
+    #0284c7 55%,
+    #0ea5e9 72%,
+    #38bdf8 88%,
+    #7dd3fc 100%);
+  --card-radius: 14px; --gap: 22px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  background: var(--bg);
+  background-attachment: fixed;
+  color: #0c4a6e;
+  padding: 0 10px 90px; overflow-x: hidden;
+}
+#topBar {
+  position: fixed; top: 0; left: 0; right: 0; height: 42px;
+  background: var(--primary); color: white; display: flex; align-items: center;
+  padding: 0 12px; z-index: 1000; font-weight: 800; font-size: 13px;
+  letter-spacing: 1px; font-family: 'Cinzel', serif;
+}
+#topBar .badge { margin-left: auto; background: white; color: var(--primary); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 900; }
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; display: inline-block; margin-right: 4px; }
+.online-dot.on { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.3); }
+body { padding-top: 50px; }
+
+.sheet-tabs {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 600;
+  display: flex; gap: 6px; padding: 8px 10px; background: #e5e7eb;
+  border-top: 2px solid var(--primary); height: 58px;
+  pointer-events: auto;
+}
+.sheet-tabs .sheet-tab{ pointer-events:auto; }
+
+.sheet-tab {
+  flex: 1; padding: 10px; font-size: 13px; font-weight: 900; border: none;
+  border-radius: 10px; cursor: pointer; background: #e0f2fe; color: var(--primary);
+}
+.sheet-tab.active { background: var(--primary); color: white; transform: scale(1.03); }
+#sheetForm:not(.active) { background: #dcfce7; color: #14532d; }
+#sheetRekap:not(.active) { background: #ffedd5; color: #9a3412; }
+
+.room { display: none; max-width: 1200px; margin: 0 auto; }
+.room.active { display: flex; flex-direction: column; gap: 12px; }
+#roomRekap.active { display: block; }
+
+#moneyTop {
+  position: sticky;
+  top: 42px;
+  z-index: 400;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 6px;
+  margin: 0 -6px 4px;
+  background: rgba(12, 74, 110, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+.money-card { flex: 1; min-width: 100px; background: white; border-radius: 14px; padding: 12px 10px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.money-card .label { font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; opacity: 0.95; letter-spacing: 0.3px; }
+.money-card .value { font-size: 17px; font-weight: 900; }
+.money-card.owner { background: linear-gradient(135deg,#ff6d00,#ff9100); color: white; }
+.money-card.kasir1 { background: linear-gradient(135deg,#00c853,#00e676); color: white; }
+.money-card.kasir2 { background: linear-gradient(135deg,#0091ea,#00b0ff); color: white; }
+.money-card.total { background: linear-gradient(135deg,#6200ea,#7c4dff); color: white; }
+
+#akunFilter { display: flex; gap: 8px; flex-wrap: wrap; margin: 0; padding: 0 2px; position: relative; z-index: 1; flex-shrink: 0; }
+.akun-btn { padding: 8px 14px; border-radius: 10px; border: 2px solid #bae6fd; background: white; color: var(--primary); font-weight: 800; font-size: 12px; cursor: pointer; }
+.akun-btn.active { background: var(--primary); color: white; }
+
+#timerGrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gap); row-gap: 26px; position: relative; z-index: 1; margin: 10px 0; flex-shrink: 0; }
+.timer-card {
+  background: white; border-radius: var(--card-radius); border: 2px solid #bae6fd;
+  position: relative; display: flex; flex-direction: column; aspect-ratio: 1/1.05; overflow: hidden;
+}
+.timer-card.active { background: var(--primary-light); border-color: var(--primary); color: white; }
+.timer-card.paused { background: linear-gradient(135deg,#fde047,#eab308); border-color: #a16207; color: #422006; }
+.timer-card.disabled-timer { opacity: 0.4; pointer-events: none; filter: grayscale(0.6); }
+.btn-nama {
+  position: absolute; top: 4px; left: 4px; max-width: 55%; height: 22px; padding: 0 8px;
+  border-radius: 8px; background: #f0f9ff; color: var(--primary); border: 1px solid #bae6fd;
+  font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; z-index: 5; text-transform: uppercase;
+}
+.timer-card.active .btn-nama { background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.4); }
+.top-actions {
+  position: absolute; top: 4px; right: 4px; display:flex; gap:4px; z-index: 5;
+}
+.btn-pindah, .btn-tukar {
+  height: 22px; padding: 0 7px; border-radius: 8px;
+  border: none; font-size: 9px; font-weight: 900; cursor: pointer;
+}
+.btn-pindah { background: #16a34a; color: white; }
+.btn-tukar { background: #ea580c; color: white; }
+.timer-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px 4px 52px; gap: 2px; text-align: center; }
+.timer-num { font-size: clamp(26px, 7.5vw, 46px); font-weight: 900; line-height: 1; color: #65a30d; }
+.timer-card.active .timer-num { color: #fef08a; }
+.timer-time { font-size: clamp(15px, 4vw, 22px); font-weight: 900; }
+.timer-cost { font-size: clamp(13px, 3.8vw, 20px); font-weight: 900; color: #14532d; }
+.timer-card.active .timer-cost { color: #fef9c3; }
+.btn-row { position: absolute; bottom: 4px; left: 4px; right: 4px; display: flex; gap: 6px; }
+.btn-play, .btn-stop { flex: 1; height: 40px; border: none; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.btn-play { background: var(--green); color: white; }
+.timer-card.active .btn-play { background: #fde047; color: #422006; }
+.btn-stop { background: var(--red); color: white; }
+.timer-card.idle .btn-stop { background: #94a3b8; }
+
+#recentHistoryWrap { margin-top: 16px; background: white; border-radius: 14px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+#recentHistoryWrap .title { font-weight: 900; font-size: 13px; margin-bottom: 8px; color: var(--primary); }
+.recent-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 13px; font-weight: 700; }
+.recent-item:last-child { border-bottom: none; }
+.recent-item .box { background: var(--primary); color: white; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 900; }
+.recent-item .cost { color: #14532d; font-weight: 900; }
+
+.floating-menu { position: fixed; bottom: 70px; right: 12px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
+.fab { width: 50px; height: 50px; border-radius: 50%; border: none; box-shadow: 0 4px 14px rgba(0,0,0,0.3); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+.fab-laporan { background: var(--primary); color: white; }
+.fab-settings { background: white; color: var(--primary); border: 2px solid #bae6fd; }
+.fab-logout { background: var(--red); color: white; }
+
+.modal-bg { position: fixed; inset: 0; background: rgba(12,74,110,0.65); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 12px; }
+.modal-box { background: white; border-radius: 16px; padding: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+.modal-box h3 { font-size: 16px; font-weight: 900; margin-bottom: 12px; color: var(--primary); }
+.pindah-item { padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 6px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; }
+.pindah-item:hover { background: #f0f9ff; }
+.pindah-item.disabled { opacity: 0.4; pointer-events: none; }
+
+/* FORM */
+.form-card { background: white; border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.form-card label { display: block; font-size: 11px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase; }
+.form-card input { width: 100%; padding: 12px; border: 1px solid #d4d4d4; border-radius: 8px; font-size: 15px; font-weight: 700; outline: none; }
+.form-card input:focus { border-color: var(--accent); }
+.form-card input[readonly] { background: #f1f5f9; color: #334155; }
+.form-tgl { background: #f0f9ff; border-color: #bae6fd; }
+.form-kas-awal { background: #f0f9ff; border-color: #bae6fd; }
+.form-rental { background: #dcfce7; border: 2px solid #22c55e; }
+.form-aplikasir { background: #fef3c7; border-color: #f59e0b; }
+.form-ket { background: #f3e8ff; border-color: #c084fc; }
+.ket-row { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+.ket-list { margin-top: 10px; }
+.ket-item { display: flex; justify-content: space-between; align-items: center; background: white; border: 1px solid #e9d5ff; border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 13px; font-weight: 700; }
+.ket-item .hapus { background: #ef4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; }
+.btn-simpan-kas { width: 100%; padding: 16px; border: none; border-radius: 12px; background: #107c41; color: white; font-weight: 900; font-size: 15px; cursor: pointer; margin-top: 8px; }
+.btn-simpan-kas:disabled { background: #94a3b8; cursor: not-allowed; }
+.btn-simpan-kas.sudah { background: #0c4a6e; }
+.btn-simpan-kas.running { background: #ef4444; }
+.banner-sudah { background: #e5e7eb; border: 2px solid #9ca3af; border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center; color: #4b5563; font-weight: 800; }
+.banner-running { background: #fef2f2; border: 2px solid #ef4444; border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center; color: #991b1b; font-weight: 800; }
+
+/* REKAP */
+.rekap-filter {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px;
+}
+.rekap-mode-btn {
+  padding: 10px 14px; border-radius: 10px; border: 2px solid #cbd5e1;
+  background: white; color: var(--primary); font-weight: 800; font-size: 13px; cursor: pointer;
+}
+.rekap-mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.rekap-filter input, .rekap-filter select {
+  padding: 10px 12px; border: 1px solid #d4d4d4; border-radius: 8px; font-weight: 700; font-size: 13px;
+}
+.rekap-big-total {
+  background: linear-gradient(135deg, #0c4a6e, #082f49); color: white;
+  border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(12,74,110,0.3);
+  position: relative; z-index: 1;
+}
+.rekap-big-total .label { font-size: 13px; font-weight: 800; opacity: 0.9; letter-spacing: 1px; display: block; margin-bottom: 4px; }
+.rekap-big-total .value { font-size: clamp(26px, 8vw, 36px); font-weight: 900; margin: 8px 0; line-height: 1.15; word-break: break-word; }
+.rekap-big-total .sub { font-size: 12px; opacity: 0.85; background: rgba(255,255,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 20px; margin-top: 4px; }
+
+.rekap-item {
+  background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px;
+  padding: 14px; margin-bottom: 10px;
+}
+.rekap-item .head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  flex-wrap: wrap; gap: 6px;
+}
+.rekap-item .tgl { font-weight: 900; font-size: 14px; color: var(--primary); }
+.rekap-item .akun { font-size: 12px; font-weight: 800; background: #e0f2fe; color: #0c4a6e; padding: 3px 10px; border-radius: 8px; }
+.rekap-item .rows { font-size: 13px; line-height: 1.7; }
+.rekap-item .rows b { font-weight: 800; }
+.rekap-item .total-row {
+  background: var(--primary); color: white; padding: 8px 12px; border-radius: 8px;
+  margin-top: 10px; font-weight: 900; font-size: 15px; text-align: right;
+}
+.rekap-item .hapus-btn {
+  margin-top: 8px; padding: 6px 12px; background: #fee2e2; border: 1px solid #fecaca;
+  color: #dc2626; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer;
+}
+
+/* Laporan modal + Settings (same as V4) */
+.laporan-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.laporan-mode-btn { padding: 8px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background: white; color: var(--primary); font-weight: 800; font-size: 12px; cursor: pointer; }
+.laporan-mode-btn.active { background: var(--primary); color: white; }
+.laporan-date-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+.laporan-date-row input, .laporan-date-row select { padding: 8px 10px; border: 1px solid #d4d4d4; border-radius: 8px; font-weight: 700; font-size: 13px; }
+.laporan-total-big { background: linear-gradient(135deg,#0c4a6e,#082f49); color: white; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 14px; position: relative; z-index: 1; }
+.laporan-total-big .value { font-size: clamp(22px, 6vw, 28px); font-weight: 900; margin: 6px 0; line-height: 1.15; word-break: break-word; }
+.laporan-per-akun { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.laporan-akun-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center; }
+.laporan-akun-card .name { font-size: 11px; font-weight: 800; color: #64748b; }
+.laporan-akun-card .amt { font-size: 16px; font-weight: 900; color: var(--primary); }
+.laporan-list { max-height: 280px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+.laporan-item { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+.laporan-item .top { display: flex; justify-content: space-between; font-weight: 800; margin-bottom: 4px; }
+.laporan-item .meta { font-size: 11px; color: #64748b; display: flex; gap: 8px; flex-wrap: wrap; }
+.laporan-item .play { background: #dcfce7; color: #14532d; padding: 1px 6px; border-radius: 4px; }
+.laporan-item .stop { background: #fee2e2; color: #7f1d1d; padding: 1px 6px; border-radius: 4px; }
+
+.settings-section { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.settings-section h4 { font-size: 13px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+.user-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; background: white; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 8px; }
+.user-row .uname { font-weight: 900; min-width: 70px; font-size: 13px; }
+.user-row input[type="text"], .user-row input[type="password"] { padding: 6px 10px; border: 1px solid #d4d4d4; border-radius: 6px; font-size: 12px; font-weight: 700; width: 100px; }
+.toggle { position: relative; width: 44px; height: 24px; cursor: pointer; display: inline-block; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle .slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 24px; transition: .2s; }
+.toggle .slider:before { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: .2s; }
+.toggle input:checked + .slider { background: #22c55e; }
+.toggle input:checked + .slider:before { transform: translateX(20px); }
+.perm-row { display: flex; align-items: center; gap: 8px; padding: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
+.perm-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+.timer-assign-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 240px; overflow-y: auto; }
+.timer-assign-item { font-size: 11px; font-weight: 800; padding: 8px 4px; border-radius: 8px; background: white; border: 2px solid #e2e8f0; text-align: center; cursor: pointer; }
+.timer-assign-item.k1 { background: #dcfce7; border-color: #22c55e; color: #14532d; }
+.timer-assign-item.k2 { background: #e0f2fe; border-color: #0ea5e9; color: #0c4a6e; }
+.timer-assign-item.off { opacity: 0.45; background: #f1f5f9; }
+.add-box-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.add-box-row input { padding: 8px 10px; border: 1px solid #d4d4d4; border-radius: 8px; font-weight: 700; font-size: 13px; width: 90px; }
+.btn-save-settings { width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--primary); color: white; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 8px; }
+
+.login-bg {
+  position: fixed; inset: 0; background: var(--bg); background-attachment: fixed;
+  z-index: 3000; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 24px; gap: 0;
+}
+.login-brand {
+  text-align: center; margin-bottom: 22px;
+}
+.login-brand .hallouyun {
+  font-family: 'Cinzel', serif; font-size: clamp(32px, 9vw, 48px);
+  font-weight: 900; color: #fff; letter-spacing: 6px; line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+.login-brand .group {
+  font-family: 'Cinzel', serif; font-size: clamp(18px, 5vw, 26px);
+  font-weight: 900; color: #fbbf24; letter-spacing: 8px; margin-top: 6px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.login-box {
+  background: white; border-radius: 20px; padding: 22px 20px 20px;
+  width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+.login-select, .login-input {
+  width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid #e2e8f0;
+  font-size: 15px; font-weight: 700; margin-bottom: 10px; outline: none;
+}
+.login-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: none;
+  background: var(--primary); color: white; font-weight: 900; font-size: 15px;
+  cursor: pointer; margin-top: 6px;
+}
+.login-error { color: #ef4444; font-size: 12px; font-weight: 700; text-align: center; margin-top: 10px; display: none; }
+
+@media (max-width: 600px) {
+  #timerGrid { gap: 10px; }
+  .btn-play, .btn-stop { height: 34px; font-size: 11px; }
+  .timer-num { font-size: clamp(20px, 6.5vw, 34px); }
+  .laporan-per-akun { grid-template-columns: 1fr; }
+  .timer-assign-grid { grid-template-columns: repeat(4, 1fr); }
+  .rekap-big-total .value { font-size: 28px; }
+}
+@keyframes popIn { 0%{transform:scale(0.7);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+/* === GLASS BLUR UNTUK KASIR - V17.1 === */
+#moneyTop.kasir-mode .money-card .value {
+  filter: blur(12px);
+  -webkit-filter: blur(12px);
+  user-select: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#moneyTop.kasir-mode.revealed .money-card .value {
+  filter: blur(0px) !important;
+  -webkit-filter: blur(0px) !important;
+}
+#moneyTop.kasir-mode .money-card {
+  position: relative;
+  overflow: hidden;
+}
+#moneyTop.kasir-mode .money-card::after {
+  content: '👁️ TAP UNTUK LIHAT';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.3);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #0c4a6e;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+#moneyTop.kasir-mode.revealed .money-card::after {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+#moneyTop.kasir-mode {
+  cursor: pointer;
+  position: relative;
+}
+#moneyTop.kasir-mode::before {
+  content: '🔒 Laporan blur - tap untuk lihat (auto blur 10 menit)';
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.25);
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+#moneyTop.kasir-mode.revealed::before {
+  content: '👁️ Terlihat - akan blur lagi dalam 10 menit';
+  background: rgba(34,197,94,0.85);
+}
+
+
+/* V45 = V42 ASLI - KLIK KOTAK PLAY - FIX BISA DIKLIK */
+body { background: #C5E86C !important; background-color: #C5E86C !important; }
+.timer-card { border: 1.5px solid #84CC16 !important; }
+.timer-card.idle { background: #FFFFFF !important; border-color: #A3E635 !important; cursor: pointer !important; }
+.timer-card.idle .timer-num {
+  color: #14532D !important;
+  font-size: clamp(28px, 11vw, 52px) !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+.timer-card.active { background: #065F46 !important; border-color: #064E3B !important; }
+.timer-card.active .timer-num { color: #FFFFFF !important; }
+.timer-card.active .timer-time { color: #D9F99D !important; }
+.timer-card.active .timer-cost { color: #FFFFFF !important; }
+
+/* PAUSE ORANGE MENYALA - V42 */
+.timer-card.paused {
+  background: linear-gradient(135deg, #FF8C00, #FF6B00 50%, #FF4500) !important;
+  border-color: #CC3700 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(255,107,0,0.3), 0 6px 20px rgba(255,69,0,0.5) !important;
+  animation: orangePulse 0.9s infinite alternate !important;
+}
+.timer-card.paused .timer-num, .timer-card.paused .timer-time, .timer-card.paused .timer-cost { color: #FFFFFF !important; }
+@keyframes orangePulse { 0% { transform: scale(1); } 100% { transform: scale(1.03); } }
+
+/* IDLE KLIK - nomor box besar isi kotak */
+.timer-card.idle .timer-content {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 8px 2px !important;
+  min-height: 100% !important;
+  flex: 1 !important;
+}
+.timer-card.idle .timer-time,
+.timer-card.idle .timer-cost,
+.timer-card.idle .btn-nama,
+.timer-card.idle .top-actions,
+.timer-card.idle .btn-row { display: none !important; }
+
+/* LAPORAN ATAS 3D - V42 */
+/* OLD BUGGY REMOVED */
+
+/* OWNER LAPORAN BEDA WARNA - UNGU BOS - TIDAK SAMA PAUSE */
+#moneyTop.owner-mode {
+  background: linear-gradient(145deg, #7C3AED, #5B21B6) !important;
+  border: 2px solid #A78BFA !important;
+  box-shadow: 0 1px 0 0 #DDD6FE inset, 0 8px 0 0 #4C1D95, 0 10px 0 0 #3C1670, 0 12px 20px rgba(124,58,237,0.4) !important;
+  color: white !important;
+}
+
+/* LOGIN BACK HIJAU PISANG MUDA - SAMAKAN DALAM */
+#loginPage { background: #C5E86C !important; background-color: #C5E86C !important; }
+.login-container, #loginContainer { background: #C5E86C !important; }
+
+@media (orientation: portrait) {
+  #timerGrid { grid-template-columns: repeat(5, 1fr) !important; gap: 11px !important; }
+  .timer-card { border-radius: 7px !important; }
+}
+
+
+/* ===== 10 PILIHAN WARNA OWNER - TAMBAHAN DI SETTINGS ===== */
+body.theme-1-biru-tua { background: #0c4a6e !important; }
+body.theme-1-biru-tua .timer-card.active { background: #0c4a6e !important; }
+body.theme-1-biru-tua .timer-card.paused { background: #fef08a !important; }
+body.theme-1-biru-tua #moneyTop.owner-mode { background: #0c4a6e !important; border-color: #bae6fd !important; }
+
+body.theme-2-hijau-pisang { background: #C5E86C !important; }
+body.theme-2-hijau-pisang .timer-card.active { background: #065F46 !important; }
+body.theme-2-hijau-pisang .timer-card.paused { background: linear-gradient(135deg, #FF8C00, #FF4500) !important; }
+body.theme-2-hijau-pisang #moneyTop.owner-mode { background: linear-gradient(145deg, #7C3AED, #5B21B6) !important; }
+
+body.theme-3-sunset { background: #FFF7ED !important; }
+body.theme-3-sunset .timer-card.active { background: linear-gradient(135deg, #FB923C, #EA580C) !important; }
+body.theme-3-sunset .timer-card.paused { background: linear-gradient(135deg, #FDE68A, #FBBF24) !important; }
+body.theme-3-sunset #moneyTop.owner-mode { background: linear-gradient(135deg, #EA580C, #9A3412) !important; }
+
+body.theme-4-boss-black { background: #111827 !important; }
+body.theme-4-boss-black .timer-card.idle { background: #1F2937 !important; border-color: #FACC15 !important; }
+body.theme-4-boss-black .timer-card.idle .timer-num { color: #FACC15 !important; }
+body.theme-4-boss-black .timer-card.active { background: linear-gradient(145deg, #1F2937, #000) !important; border-color: #FACC15 !important; }
+body.theme-4-boss-black #moneyTop.owner-mode { background: #000 !important; border-color: #FACC15 !important; color: #FACC15 !important; }
+
+body.theme-5-ocean { background: #CCFBF1 !important; }
+body.theme-5-ocean .timer-card.active { background: linear-gradient(135deg, #0E7490, #155E75) !important; }
+body.theme-5-ocean .timer-card.paused { background: linear-gradient(135deg, #F0ABFC, #E879F9) !important; }
+body.theme-5-ocean #moneyTop.owner-mode { background: linear-gradient(135deg, #0E7490, #134E4A) !important; }
+
+body.theme-6-ungu-royal { background: #4C1D95 !important; }
+body.theme-6-ungu-royal .timer-card.active { background: linear-gradient(135deg, #7C3AED, #5B21B6) !important; }
+body.theme-6-ungu-royal .timer-card.paused { background: linear-gradient(135deg, #FDE68A, #F59E0B) !important; }
+body.theme-6-ungu-royal #moneyTop.owner-mode { background: linear-gradient(145deg, #6D28D9, #4C1D95) !important; }
+
+body.theme-7-merah-api { background: #7F1D1D !important; }
+body.theme-7-merah-api .timer-card.active { background: linear-gradient(135deg, #DC2626, #991B1B) !important; }
+body.theme-7-merah-api .timer-card.paused { background: linear-gradient(135deg, #FBBF24, #F59E0B) !important; }
+body.theme-7-merah-api #moneyTop.owner-mode { background: linear-gradient(145deg, #B91C1C, #7F1D1D) !important; }
+
+body.theme-8-pink-soft { background: #FDF2F8 !important; }
+body.theme-8-pink-soft .timer-card.active { background: linear-gradient(135deg, #EC4899, #DB2777) !important; }
+body.theme-8-pink-soft .timer-card.paused { background: linear-gradient(135deg, #FDE68A, #FBBF24) !important; }
+body.theme-8-pink-soft #moneyTop.owner-mode { background: linear-gradient(145deg, #DB2777, #9D174D) !important; }
+
+body.theme-9-abu-elegant { background: #374151 !important; }
+body.theme-9-abu-elegant .timer-card.idle { background: #4B5563 !important; border-color: #9CA3AF !important; }
+body.theme-9-abu-elegant .timer-card.idle .timer-num { color: #E5E7EB !important; }
+body.theme-9-abu-elegant .timer-card.active { background: linear-gradient(145deg, #1F2937, #111827) !important; border-color: #60A5FA !important; }
+body.theme-9-abu-elegant #moneyTop.owner-mode { background: linear-gradient(145deg, #1F2937, #111827) !important; border-color: #60A5FA !important; }
+
+body.theme-10-kuning-emas { background: #FEF3C7 !important; }
+body.theme-10-kuning-emas .timer-card.active { background: linear-gradient(135deg, #D97706, #B45309) !important; }
+body.theme-10-kuning-emas .timer-card.paused { background: linear-gradient(135deg, #FDE68A, #F59E0B) !important; }
+body.theme-10-kuning-emas #moneyTop.owner-mode { background: linear-gradient(145deg, #B45309, #92400E) !important; }
+
+.theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.theme-btn { padding: 12px 6px; border-radius: 12px; border: 3px solid #e2e8f0; cursor: pointer; font-weight: 900; font-size: 10px; text-align: center; }
+.theme-btn.active { border-color: #16A34A !important; box-shadow: 0 0 0 3px rgba(22,163,74,0.3); }
+.theme-btn.t1 { background: #0c4a6e; color: white; }
+.theme-btn.t2 { background: linear-gradient(135deg, #C5E86C, #84CC16); color: #14532D; }
+.theme-btn.t3 { background: linear-gradient(135deg, #FFF7ED, #FB923C); color: #9A3412; }
+.theme-btn.t4 { background: #111827; color: #FACC15; border-color: #FACC15; }
+.theme-btn.t5 { background: #CCFBF1; color: #134E4A; }
+.theme-btn.t6 { background: linear-gradient(135deg, #7C3AED, #4C1D95); color: white; }
+.theme-btn.t7 { background: linear-gradient(135deg, #DC2626, #7F1D1D); color: white; }
+.theme-btn.t8 { background: linear-gradient(135deg, #FDF2F8, #EC4899); color: #9D174D; }
+.theme-btn.t9 { background: #374151; color: #E5E7EB; }
+.theme-btn.t10 { background: linear-gradient(135deg, #FEF3C7, #D97706); color: #78350F; }
+
+
+/* ===== FIX KOTAK GEDE TOTAL LAPORAN - ANGKA GAK KELIATAN PUTIH VS PUTIH ===== */
+/* Reset laporan total big - jangan timpa rumus, buang rumus lama ganti baru */
+.laporan-total-big {
+  background: linear-gradient(135deg, #0c4a6e, #082f49) !important;
+  color: white !important;
+  border: 3px solid #38bdf8 !important;
+  border-radius: 16px !important;
+  padding: 18px 16px !important;
+  box-shadow: 0 6px 0 0 #082f49, 0 10px 20px rgba(0,0,0,0.3) !important;
+}
+.laporan-total-big .label {
+  color: #bae6fd !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+}
+.laporan-total-big .value {
+  color: #ffffff !important;
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  text-shadow: 0 2px 0 #082f49 !important;
+}
+
+/* moneyTop - sticky laporan singkat + angka jelas */
+#moneyTop {
+  position: sticky !important;
+  top: 42px !important;
+  z-index: 400 !important;
+  background: rgba(12, 74, 110, 0.92) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  padding: 8px 6px !important;
+  border-radius: 0 0 12px 12px !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
+}
+.money-card {
+  background: white !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 14px !important;
+}
+.money-card .label { color: #475569 !important; font-weight: 900 !important; font-size: 22px !important; }
+.money-card .value { color: #0f172a !important; font-weight: 900 !important; font-size: 16px !important; filter: none !important; }
+
+/* Owner & kasir colors - angka tetap putih karena background warna */
+.money-card.owner { background: linear-gradient(135deg,#ff6d00,#ff9100) !important; border-color: #ff6d00 !important; }
+.money-card.owner .label, .money-card.owner .value { color: white !important; }
+.money-card.kasir1 { background: linear-gradient(135deg,#00c853,#00e676) !important; border-color: #00c853 !important; }
+.money-card.kasir1 .label, .money-card.kasir1 .value { color: white !important; }
+.money-card.kasir2 { background: linear-gradient(135deg,#2962ff,#448aff) !important; border-color: #2962ff !important; }
+.money-card.kasir2 .label, .money-card.kasir2 .value { color: white !important; }
+.money-card.kasir3 { background: linear-gradient(135deg,#d50000,#ff1744) !important; border-color: #d50000 !important; }
+.money-card.kasir3 .label, .money-card.kasir3 .value { color: white !important; }
+.money-card.total { background: linear-gradient(135deg,#6200ea,#7c4dff) !important; border-color: #6200ea !important; }
+.money-card.total .label, .money-card.total .value { color: white !important; }
+
+/* FIX owner-mode kotak gede - ungu bos angka putih jelas */
+#moneyTop.owner-mode {
+  background: linear-gradient(145deg, #7C3AED, #5B21B6) !important;
+  border: 3px solid #A78BFA !important;
+  border-radius: 16px !important;
+  padding: 8px !important;
+}
+#moneyTop.owner-mode .money-card { background: rgba(255,255,255,0.15) !important; border-color: rgba(255,255,255,0.3) !important; }
+#moneyTop.owner-mode .money-card .label { color: #DDD6FE !important; }
+#moneyTop.owner-mode .money-card .value { color: #FFFFFF !important; }
+
+/* Tema overrides untuk moneyTop - pastikan tetap keliatan angkanya */
+body.theme-1-biru-tua #moneyTop.owner-mode .money-card,
+body.theme-2-hijau-pisang #moneyTop.owner-mode .money-card,
+body.theme-3-sunset #moneyTop.owner-mode .money-card,
+body.theme-4-boss-black #moneyTop.owner-mode .money-card,
+body.theme-5-ocean #moneyTop.owner-mode .money-card,
+body.theme-6-ungu-royal #moneyTop.owner-mode .money-card,
+body.theme-7-merah-api #moneyTop.owner-mode .money-card,
+body.theme-8-pink-soft #moneyTop.owner-mode .money-card,
+body.theme-9-abu-elegant #moneyTop.owner-mode .money-card,
+body.theme-10-kuning-emas #moneyTop.owner-mode .money-card {
+  background: rgba(255,255,255,0.15) !important;
+}
+body.theme-1-biru-tua #moneyTop.owner-mode .money-card .value,
+body.theme-2-hijau-pisang #moneyTop.owner-mode .money-card .value,
+body.theme-3-sunset #moneyTop.owner-mode .money-card .value,
+body.theme-4-boss-black #moneyTop.owner-mode .money-card .value,
+body.theme-5-ocean #moneyTop.owner-mode .money-card .value,
+body.theme-6-ungu-royal #moneyTop.owner-mode .money-card .value,
+body.theme-7-merah-api #moneyTop.owner-mode .money-card .value,
+body.theme-8-pink-soft #moneyTop.owner-mode .money-card .value,
+body.theme-9-abu-elegant #moneyTop.owner-mode .money-card .value,
+body.theme-10-kuning-emas #moneyTop.owner-mode .money-card .value {
+  color: white !important;
+}
+
+
+/* V64 - JANGAN BUANG OWNER + JUDUL MUNCUL + RUMUS BARU */
+#laporanTotalBig {
+  display: block !important;
+  visibility: visible !important;
+  background: linear-gradient(135deg, #0c4a6e 0%, #082f49 100%) !important;
+  color: white !important;
+  border: 3px solid #38bdf8 !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+  text-align: center !important;
+  margin-bottom: 12px !important;
+  min-height: 80px !important;
+}
+#laporanTotalBig .label { color: #bae6fd !important; font-size: 11px !important; font-weight: 800 !important; }
+#laporanTotalBig .value { color: white !important; font-size: 30px !important; font-weight: 900 !important; }
+#laporanTotalBig .sub { color: #7dd3fc !important; font-size: 10px !important; }
+#laporanPerAkun {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+  visibility: visible !important;
+}
+.per-akun-card { background: white !important; border: 2px solid #e2e8f0 !important; border-radius: 12px !important; padding: 10px !important; text-align: center !important; }
+
+
+/* === V64 USER REQUEST: OWNER KASIR DI ATAS, TIDAK MELAYANG === */
+#moneyTop {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  overflow: visible !important;
+  padding: 8px 6px 10px !important;
+  margin: 0 -6px 4px !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+#moneyTop.kasir-mode::before {
+  content: none !important;
+}
+#moneyTop .money-card {
+  flex: 1 1 0;
+  min-width: 100px;
+}
+@media (max-width: 600px) {
+  #timerGrid { gap: 15px !important; }
+}
+@media (orientation: portrait) {
+  #timerGrid { gap: 15px !important; }
+}
+
+@media (max-width:600px){ #timerGrid{ gap:18px !important; row-gap:22px !important; } }
+.timer-card[data-timer-num]{ user-select:none; -webkit-user-select:none; }
+
+/* === SEARCH BOX FILTER LAPORAN & REKAP - V68 === */
+.laporan-search-wrap, .rekap-search-wrap { display:flex; gap:6px; margin:10px 0 12px; position:relative; }
+.laporan-search-input, .rekap-search-input {
+  flex:1; padding:11px 14px 11px 38px; border:2px solid #0ea5e9; border-radius:12px;
+  font-weight:800; font-size:13px; outline:none; background:white;
+  box-shadow:0 2px 8px rgba(14,165,233,0.15);
+}
+.laporan-search-input:focus, .rekap-search-input:focus { border-color:#0c4a6e; box-shadow:0 0 0 3px rgba(14,165,233,0.25); }
+.laporan-search-wrap::before, .rekap-search-wrap::before {
+  content:'🔍'; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:16px; pointer-events:none;
+}
+.search-clear-btn {
+  padding:10px 14px; background:#e2e8f0; border:none; border-radius:10px; font-weight:900; cursor:pointer; font-size:12px;
+}
+.search-clear-btn:hover { background:#cbd5e1; }
+.laporan-highlight { background:#fef08a; padding:1px 4px; border-radius:4px; font-weight:900; }
+
+</style>
+</head>
+<body>
+
+<div id="topBar">
+  <span>HALLOUYUN GROUP</span>
+  <span style="margin-left:10px;font-size:10px;opacity:0.85">
+    <span id="onlineDot" class="online-dot"></span><span id="onlineText">LOCAL</span>
+  </span>
+  <span id="idleBadge" style="margin-left:8px;background:rgba(255,255,255,0.2);color:#fde047;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;font-family:Inter,sans-serif;letter-spacing:0;display:none">30:00</span>
+  <span style="margin-left:6px;background:#ef4444;color:white;padding:3px 8px;border-radius:8px;font-size:9px;font-weight:900">FB ON</span><span id="userBadge" class="badge">-</span>
+</div>
+
+<div id="loginModal" class="login-bg">
+  <div class="login-brand">
+    <div class="hallouyun">HALLOUYUN</div>
+    <div class="group">GROUP</div>
+  </div>
+  <div class="login-box">
+    <select id="loginUsername" class="login-select"></select>
+    <input id="loginPassword" type="password" class="login-input" placeholder="Password">
+    <button class="login-btn" onclick="doLogin()">MASUK</button>
+    <div id="loginError" class="login-error"></div>
+  </div>
+</div>
+
+<!-- ROOM TIMER -->
+<div id="roomTimer" class="room active">
+  <div id="moneyTop"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div id="akunFilter" style="flex:1"></div>
+    <div id="sisaHpBadge" style="background:#fff;padding:9px 14px;border-radius:12px;font-weight:900;font-size:12px;color:#0c4a6e;box-shadow:0 3px 10px rgba(0,0,0,0.18);border:2px solid #bae6fd;white-space:nowrap">SISA: <span id="sisaHpCount">0</span> FREE</div>
+  </div>
+  <div id="timerGrid"></div>
+  <div id="recentHistoryWrap">
+    <div class="title">🕒 History Stop - 3 Terbaru</div>
+    <div id="recentHistory"></div>
+  </div>
+</div>
+
+
+<!-- ROOM OWNER - BUKA/TUTUP BOX DI HP RENTAL - PASSWORD SAMA DENGAN LOGIN OWNER -->
+<div id="roomOwner" class="room" style="pointer-events:auto">
+  <div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;padding:14px 16px;font-weight:900;font-size:15px;border-radius:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(124,58,237,.4)">
+    <span>👑 OWNER VIEW - BUKA / TUTUP BOX DI HP RENTAL</span>
+    <span style="font-size:11px;background:rgba(255,255,255,.25);padding:5px 12px;border-radius:20px">● LIVE</span>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <div style="background:white;padding:10px 16px;border-radius:12px;font-weight:900;font-size:12px;border:2px solid #a78bfa">Terpakai Rental: <span id="statUsed">0</span></div>
+    <div style="background:white;padding:10px 16px;border-radius:12px;font-weight:900;font-size:12px;border:2px solid #86efac">Kosong: <span id="statFree">60</span></div>
+    <div style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white;padding:10px 16px;border-radius:12px;font-weight:900;font-size:12px">Buka: <span id="statActive">60</span></div>
+    <button onclick="setAllBoxes(true)" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white;padding:10px 14px;border-radius:10px;font-weight:900;border:none;cursor:pointer">✅ BUKA SEMUA</button>
+    <button onclick="setAllBoxes(false)" style="background:#64748b;color:white;padding:10px 14px;border-radius:10px;font-weight:900;border:none;cursor:pointer">🚫 TUTUP SEMUA</button>
+    <button onclick="unlockAllRental()" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:white;padding:10px 14px;border-radius:10px;font-weight:900;border:none;cursor:pointer">🔓 RESET KUNCI RENTAL</button>
+  </div>
+  <div id="ownerGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+</div>
+
+<!-- ROOM FORM -->
+<div id="roomForm" class="room">
+  <div style="background:#107c41;color:white;padding:14px 14px;font-weight:900;font-size:14px;border-radius:12px 12px 0 0;margin-bottom:0;position:relative;z-index:2">FORM LAPORAN KAS</div>
+  <div style="background:white;border:1px solid #d4d4d4;border-top:none;border-radius:0 0 12px 12px;padding:16px;margin-top:0;position:relative;z-index:1">
+    <div id="formBanner"></div>
+    <div class="form-card form-tgl">
+      <label>📅 TANGGAL</label>
+      <input id="kas_tanggal" type="text" readonly>
+      <input id="kas_tanggal_hidden" type="hidden">
+    </div>
+    <div class="form-card form-kas-awal">
+      <label>💵 KAS AWAL</label>
+      <input id="kas_awal" type="number" inputmode="numeric" value="250000" oninput="hitungTotal()">
+    </div>
+    <div class="form-card form-rental">
+      <label>📱 RENTAL HP (Hari ini - sync otomatis)</label>
+      <input id="kas_rental" type="number" readonly value="0">
+    </div>
+    <div class="form-card form-aplikasir">
+      <label>📲 APLIKASIR</label>
+      <input id="kas_aplikasi" type="number" inputmode="numeric" placeholder="aplikasir harus diisi" oninput="hitungTotal()">
+    </div>
+    <div class="form-card form-ket">
+      <label>📝 KETERANGAN + NOMINAL (bisa beberapa kali)</label>
+      <div class="ket-row">
+        <div><input id="kas_ket_text" type="text" placeholder="Keterangan"></div>
+        <div>
+          <input id="kas_ket_angka" type="text" inputmode="text" placeholder="+ / - nominal">
+          <div style="font-size:10px;color:#6b21a8;margin-top:2px">+ = plus, - = minus</div>
+        </div>
+      </div>
+      <button type="button" onclick="tambahKet()" style="margin-top:8px;width:100%;padding:10px;background:#7c3aed;color:white;border:none;border-radius:8px;font-weight:800;font-size:13px">+ TAMBAH KETERANGAN</button>
+      <div id="ketList" class="ket-list" style="display:none">
+        <div id="ketListItems"></div>
+        <div id="ketTotalSum" style="margin-top:6px;padding:6px;background:#f3e8ff;border:1px solid #d8b4fe;border-radius:6px;font-size:12px;font-weight:800;text-align:right">Total Ket: Rp 0</div>
+      </div>
+    </div>
+    <div style="background:#0c4a6e;color:white;border-radius:10px;padding:12px;text-align:center;margin-bottom:12px">
+      <div style="font-size:12px;opacity:0.85">TOTAL AKHIR</div>
+      <div id="kas_total_display" style="font-size:26px;font-weight:900">Rp 0</div>
+    </div>
+    <button id="btnSimpanKas" class="btn-simpan-kas" onclick="simpanKas()">💾 SIMPAN LAPORAN KAS</button>
+  </div>
+</div>
+
+<!-- ROOM REKAP -->
+<div id="roomRekap" class="room">
+  <div style="background:#0c4a6e;color:white;padding:14px 14px;font-weight:900;font-size:14px;border-radius:12px 12px 0 0;margin-bottom:0;position:relative;z-index:2">REKAP LAPORAN KAS</div>
+  <div style="background:white;border:1px solid #d4d4d4;border-top:none;border-radius:0 0 12px 12px;padding:14px;margin-top:0;position:relative;z-index:1">
+
+    <!-- Filter -->
+    <div class="rekap-filter">
+      <button class="rekap-mode-btn active" data-mode="hari" onclick="setRekapMode('hari')">📅 HARI</button>
+      <button class="rekap-mode-btn" data-mode="bulan" onclick="setRekapMode('bulan')">📆 BULAN</button>
+      <button class="rekap-mode-btn" data-mode="tahun" onclick="setRekapMode('tahun')">🗓️ TAHUN</button>
+      <button class="rekap-mode-btn" data-mode="semua" onclick="setRekapMode('semua')">📊 SEMUA</button>
+      <input type="date" id="rekapDate" onchange="renderRekap()">
+      <select id="rekapAkun" onchange="renderRekap()" style="min-width:120px"></select>
+      <button onclick="setRekapToday()" style="padding:10px 14px;background:#22c55e;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer">Today</button>
+    </div>
+
+    <!-- Big Total -->
+    <div id="rekapBigTotal" class="rekap-big-total"></div>
+    <!-- SEARCH REKAP KAS - V68 (cari keterangan / box jika ada di ket) -->
+    <div class="rekap-search-wrap">
+      <input type="text" id="rekapBoxSearch" class="rekap-search-input" placeholder="🔍 Cari keterangan kas..." autocomplete="off" oninput="renderRekap()">
+      <button class="search-clear-btn" onclick="clearRekapBoxSearch()" title="Hapus pencarian">✕</button>
+    </div>
+    <div id="rekapSearchInfo" style="font-size:11px;color:#64748b;font-weight:700;text-align:right;margin-bottom:8px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button onclick="forceSyncTotal()" style="flex:1;padding:12px;background:linear-gradient(135deg,#6200ea,#7c4dff);color:white;border:none;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2)">🚀 FORCE SYNC TOTAL (PUSH)</button>
+      <button onclick="forcePullTotal()" style="flex:1;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer">⬇️ PULL GABUNG</button>
+    </div>
+    <div style="font-size:10px;color:#64748b;text-align:center;margin-bottom:10px">Kalau Tablet & Infinix beda total → klik PUSH di device yang paling lengkap, lalu PULL di device satunya</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <button onclick="showDebugInfo()" style="flex:1;padding:10px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;font-weight:800;font-size:11px">🔍 CEK DEBUG</button>
+      <button onclick="exportDebugKas()" style="flex:1;padding:10px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;font-weight:800;font-size:11px">📤 EXPORT DEBUG</button>
+    </div>
+
+    <!-- Rincian -->
+    <div id="rekapList"></div>
+  </div>
+</div>
+
+<!-- SHEET TABS -->
+<div class="sheet-tabs" id="sheetTabs" style="display:none">
+  <button id="sheetTimer" class="sheet-tab active" onclick="switchSheet('timer')">TIMER</button>
+  <button id="sheetForm" class="sheet-tab" onclick="switchSheet('form')">FORM</button>
+  <button id="sheetRekap" class="sheet-tab" onclick="switchSheet('rekap')">REKAP</button>
+</div>
+
+<div class="floating-menu" id="floatingMenu" style="display:none">
+  <button class="fab fab-laporan" onclick="openLaporan()" title="Laporan Timer">📊</button>
+  <button class="fab fab-settings" onclick="openSettings()" title="Settings">⚙️</button>
+  <button class="fab fab-logout" onclick="logout()" title="Logout">↪</button>
+</div>
+
+<!-- MODALS -->
+<div id="pindahModal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <h3 id="pindahTitle">Pindah / Tukar Timer</h3>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button id="btnModePindah" onclick="setPindahMode('pindah')" style="flex:1;padding:10px;background:#16a34a;color:white;border:3px solid #4ade80;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer">🟢 PINDAH SAJA</button>
+      <button id="btnModeTukar" onclick="setPindahMode('tukar')" style="flex:1;padding:10px;background:#fff;color:#9a3412;border:2px solid #fb923c;border-radius:10px;font-weight:900;font-size:12px;cursor:pointer">🔄 TUKAR SAJA</button>
+    </div>
+    <input type="text" id="pindahSearch" placeholder="🔍 Cari nomor / nama box..." oninput="filterPindahList()" style="width:100%;padding:10px 12px;border:2px solid #bae6fd;border-radius:10px;font-weight:700;font-size:14px;margin-bottom:10px">
+    <div id="pindahModeLabel" style="font-size:11px;font-weight:900;margin-bottom:6px;color:#0c4a6e"></div>
+    <div id="pindahList" style="max-height:50vh;overflow-y:auto"></div>
+    <button onclick="closePindah()" style="width:100%;margin-top:12px;padding:12px;border:none;border-radius:10px;background:#e2e8f0;font-weight:800;cursor:pointer">BATAL</button>
+  </div>
+</div>
+
+<div id="laporanModal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">📊 LAPORAN TIMER DETAIL</h3>
+      <button onclick="closeLaporan()" style="background:#ef4444;color:white;border:none;border-radius:8px;padding:6px 12px;font-weight:800;cursor:pointer">TUTUP</button>
+    </div>
+    <div class="laporan-filter-row" id="laporanModeBtns">
+      <button class="laporan-mode-btn active" data-mode="hari" onclick="setLaporanMode('hari')">📅 HARI</button>
+      <button class="laporan-mode-btn" data-mode="minggu" onclick="setLaporanMode('minggu')">📆 MINGGU</button>
+      <button class="laporan-mode-btn" data-mode="bulan" onclick="setLaporanMode('bulan')">🗓️ BULAN</button>
+      <button class="laporan-mode-btn" data-mode="tahun" onclick="setLaporanMode('tahun')">📊 TAHUN</button>
+    </div>
+    <div class="laporan-date-row">
+      <input type="date" id="laporanDate" onchange="renderLaporan()">
+      <select id="laporanAkun" onchange="renderLaporan()" style="min-width:110px"></select>
+      <button onclick="setLaporanToday()" style="padding:8px 12px;background:#22c55e;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer">Today</button>
+    </div>
+    <div id="laporanTotalBig" style="display:block !important;background:linear-gradient(135deg,#0c4a6e,#082f49);color:white;border:3px solid #38bdf8;border-radius:16px;padding:20px;text-align:center;margin-bottom:12px"><div style="color:#bae6fd;font-size:11px">TOTAL HARI • Semua</div><div style="color:white;font-size:28px;font-weight:900">Rp 0</div><div style="color:#7dd3fc;font-size:10px">0 transaksi</div></div>
+    <div id="laporanPerAkun" class="laporan-per-akun"></div>
+    <!-- SEARCH BOX FILTER - V68 -->
+    <div class="laporan-search-wrap">
+      <input type="text" id="laporanBoxSearch" class="laporan-search-input" placeholder="🔍 Ketik BOX persis: m5, a5, 01, 02..." autocomplete="off" oninput="renderLaporan()">
+      <button class="search-clear-btn" onclick="clearLaporanBoxSearch()" title="Hapus pencarian">✕</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-weight:900;font-size:13px;color:var(--primary)">Detail Transaksi</div>
+      <div id="laporanSearchInfo" style="font-size:11px;color:#64748b;font-weight:700"></div>
+    </div>
+    <div id="laporanList" class="laporan-list"></div>
+  </div>
+</div>
+
+<div id="settingsModal" class="modal-bg" style="display:none">
+  <div class="modal-box" style="max-width:600px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">⚙️ PENGATURAN</h3>
+      <button onclick="closeSettings()" style="background:#ef4444;color:white;border:none;border-radius:8px;padding:6px 12px;font-weight:800;cursor:pointer">TUTUP</button>
+    </div>
+    <div class="settings-section">
+      <h4>👤 User & Password</h4>
+      <div id="settingsUsers"></div>
+    </div>
+    <div class="settings-section">
+      <h4>👁️ Kasir Boleh Lihat Kasir Lain</h4>
+      <div id="settingsPermissions"></div>
+    </div>
+    <div class="settings-section">
+      <h4>📦 Assign Timer (Eksklusif)</h4>
+      <div class="timer-assign-grid" id="timerAssignGrid"></div>
+    </div>
+    <div class="settings-section">
+      <h4>🔛 Status Timer + Tambah Box</h4>
+      <div id="timerEnableList" style="max-height:180px;overflow-y:auto;margin-bottom:10px"></div>
+      <div class="add-box-row">
+        <input type="text" id="newBoxId" placeholder="ID (N1)" maxlength="6">
+        <input type="text" id="newBoxName" placeholder="Nama" maxlength="20">
+        <button onclick="addManualBox()" style="padding:8px 14px;background:#22c55e;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer">+ BOX</button>
+      </div>
+    </div>
+    <button class="btn-save-settings" onclick="saveSettings()">💾 SIMPAN PENGATURAN</button>
+  </div>
+</div>
+
+<script>
+const LS_KEY = 'hallouyun_clean_v15';
+const LS_LOGIN = 'hallouyun_clean_login_v6';
+const LS_KAS = 'hallouyun_kas_v5';
+const LS_KAS_DEL = 'hallouyun_kas_deleted_v15';
+// Backup key lama biar session v5 tetap bisa di-restore
+const LS_LOGIN_OLD = 'hallouyun_clean_login_v5';
+
+// ===== FIREBASE ON - V70 HURUF PERSIS =====
+const FIREBASE_ENABLED = true;
+const firebaseConfig = {
+  apiKey: "AIzaSyC5liJlwMnaA4RtjcUl4FmSVXVvr7Jh6Tw",
+  authDomain: "hallouyun-1fdf9.firebaseapp.com",
+  databaseURL: "https://hallouyun-1fdf9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hallouyun-1fdf9",
+  storageBucket: "hallouyun-1fdf9.firebasestorage.app",
+  messagingSenderId: "144671242841",
+  appId: "1:144671242841:web:74f8e6634fd4d3de0acf48",
+  measurementId: "G-G3VLZN18HX"
+};
+const FB_PATH = 'hallouyun/v15';
+let firebaseDB = null;
+let isOnline = false;
+let lastPushAt = 0;
+let lastRemoteTs = 0;
+let applyingRemote = false;
+let pushTimer = null;
+let localActionAt = 0; // timestamp aksi lokal terakhir (play/stop/settings) — proteksi race singkat
+const DEVICE_ID = (() => {
+  try {
+    let id = localStorage.getItem('hallouyun_device_id');
+    if (!id) { id = 'd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); localStorage.setItem('hallouyun_device_id', id); }
+    return id;
+  } catch (e) { return 'd_' + Date.now(); }
+})();
+
+function setOnlineUI(on) {
+  isOnline = on;
+  const dot = document.getElementById('onlineDot');
+  const txt = document.getElementById('onlineText');
+  if (dot) dot.classList.toggle('on', on);
+  if (txt) txt.textContent = on ? 'ONLINE' : 'LOCAL';
+}
+
+function connectFirebase() {
+  if (typeof FIREBASE_ENABLED !== 'undefined' && !FIREBASE_ENABLED) { console.log('FB ON'); setOnlineUI(false); return; }
+  try {
+    if (typeof firebase === 'undefined') {
+      console.warn('Firebase SDK belum load');
+      setOnlineUI(false);
+      setTimeout(connectFirebase, 800);
+      return;
+    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    firebaseDB = firebase.database();
+    firebaseDB.ref(FB_PATH).on('value', snap => {
+      const data = snap.val();
+      if (!data) return;
+      if (data.deviceId === DEVICE_ID && data.ts && data.ts <= lastPushAt + 150) return;
+      if (data.ts && data.ts <= lastRemoteTs) return;
+      lastRemoteTs = data.ts || 0;
+      applyRemoteState(data);
+    }, err => {
+      console.warn('FB listen error', err);
+      setOnlineUI(false);
+    });
+    firebaseDB.ref('.info/connected').on('value', s => {
+      const on = !!s.val();
+      setOnlineUI(on);
+      if (on) {
+        setTimeout(() => { pushOnline(true); trackDevicePresence(); }, 200);
+      }
+    });
+    startAutoSyncReal();
+  } catch (e) {
+    console.warn('FB connect fail', e);
+    setOnlineUI(false);
+  }
+}
+
+function buildSyncPayload() {
+  let kas = [];
+  let kasDel = [];
+  try { kas = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch (e) {}
+  try { kasDel = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]'); } catch (e) {}
+  // filter kas yang sudah dihapus sebelum push biar bersih
+  try {
+    const delSet = new Set(kasDel);
+    kas = kas.filter(k => !delSet.has(k.id));
+  } catch(e){}
+  return {
+    ts: Date.now(),
+    deviceId: DEVICE_ID,
+    timers: state.timers,
+    users: state.users,
+    history: (state.history || []).slice(0, 400),
+    permissions: state.permissions,
+    kas,
+    kasDel
+  };
+}
+
+function pushOnline(force) {
+  if (typeof FIREBASE_ENABLED !== 'undefined' && !FIREBASE_ENABLED) return;
+  if (typeof FIREBASE_ENABLED !== 'undefined' && !FIREBASE_ENABLED) return;
+  if (!firebaseDB || applyingRemote) return;
+  if (!state.timers || state.timers.length === 0) {
+    console.log('skip push timers kosong');
+    return;
+  }
+  const now = Date.now();
+  // force (klik user) = langsung; non-force throttle 60ms (anti lemot 6-8 HP)
+  if (!force && now - lastPushAt < 60) {
+    if (pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(() => pushOnline(true), 60);
+    return;
+  }
+  if (pushTimer) { clearTimeout(pushTimer); pushTimer = null; }
+  lastPushAt = now;
+  if (force) localActionAt = now;
+  const payload = buildSyncPayload();
+  try {
+    const updates = {};
+    updates[FB_PATH + '/ts'] = payload.ts;
+    updates[FB_PATH + '/deviceId'] = payload.deviceId;
+    updates[FB_PATH + '/timers'] = payload.timers;
+    // JANGAN push users default — biar nama kustom di Firebase tidak tertimpa HP baru/iPhone
+    if (usersEditedLocally || !isMostlyDefaultUsers(payload.users)) {
+      updates[FB_PATH + '/users'] = payload.users;
+    }
+    updates[FB_PATH + '/history'] = payload.history;
+    updates[FB_PATH + '/permissions'] = payload.permissions;
+    updates[FB_PATH + '/kas'] = payload.kas;
+    updates[FB_PATH + '/kasDel'] = payload.kasDel;
+    firebaseDB.ref().update(updates).catch(e => console.warn('FB push', e));
+  } catch(e) {
+    // fallback: jangan set users default
+    try {
+      if (isMostlyDefaultUsers(payload.users) && !usersEditedLocally) {
+        delete payload.users;
+      }
+    } catch (e2) {}
+    firebaseDB.ref(FB_PATH).update(payload).catch(err => console.warn('FB push fallback', err));
+  }
+}
+
+function applyRemoteState(data) {
+  if (!data || !data.timers) {
+    // kalau timers kosong tapi kas ada, tetap merge kas nya
+    if (data && data.kas && Array.isArray(data.kas)) {
+      try {
+        let localKas = []; try { localKas = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch(e){}
+        let localDel = []; try { localDel = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]'); } catch(e){}
+        let remoteDel = Array.isArray(data.kasDel) ? data.kasDel : [];
+        const allDelSet = new Set([...localDel, ...remoteDel]);
+        const mergedMap = {};
+        localKas.forEach(it => { if(it && it.id) mergedMap[it.id] = it; });
+        data.kas.forEach(it => { if(it && it.id) mergedMap[it.id] = it; });
+        let merged = Object.values(mergedMap).filter(it => !allDelSet.has(it.id));
+        merged.sort((a,b) => (b.id||0)-(a.id||0));
+        localStorage.setItem(LS_KAS, JSON.stringify(merged));
+        localStorage.setItem(LS_KAS_DEL, JSON.stringify([...allDelSet]));
+        if (state.currentUser) { renderRekap(); renderMoneyTop(); }
+      } catch(e){}
+    }
+    return;
+  }
+  // Abaikan echo sendiri yang lebih lama dari aksi lokal terakhir
+  if (data.deviceId === DEVICE_ID && data.ts && data.ts <= lastPushAt + 100) return;
+  // Proteksi race: kalau baru saja klik lokal (<400ms), jangan terima remote yang lebih lama
+  if (localActionAt && (Date.now() - localActionAt) < 400 && data.ts && data.ts < localActionAt) {
+    return;
+  }
+  applyingRemote = true;
+  try {
+    // ===== V28 LAST-WRITE-WINS per timer (updatedAt) =====
+    // Siapa yang terakhir klik PLAY/PAUSE/STOP/PINDAH → status itu yang menang di semua HP
+    const localById = {};
+    state.timers.forEach(t => { localById[t.displayId] = t; });
+    const remoteTimers = data.timers || [];
+    remoteTimers.forEach(rt => {
+      const loc = localById[rt.displayId];
+      if (loc) {
+        const rUp = rt.updatedAt || rt.lastStart || 0;
+        const lUp = loc.updatedAt || loc.lastStart || 0;
+        // Remote lebih baru → ambil SEMUA status timer dari remote (LWW)
+        if (rUp > lUp) {
+          loc.status = rt.status || 'idle';
+          loc.elapsed = rt.elapsed || 0;
+          loc.lastStart = rt.lastStart || 0;
+          loc.by = rt.by || '';
+          loc.updatedAt = rUp;
+          // config ikut remote kalau remote lebih baru
+          if (rt.costPer10Min != null) loc.costPer10Min = rt.costPer10Min;
+          if (rt.enabled !== undefined) loc.enabled = rt.enabled;
+          if (rt.assignedTo !== undefined) loc.assignedTo = rt.assignedTo;
+          if (rt.name) loc.name = rt.name;
+        } else if (rUp === lUp) {
+          // timestamp sama: sync elapsed/config saja, jangan paksa status
+          if (rt.status === 'active' && loc.status === 'active') {
+            // keduanya aktif, ambil elapsed yang lebih besar agar tidak mundur
+            const rElapsed = (rt.elapsed || 0) + (rt.lastStart ? Math.floor((Date.now() - rt.lastStart) / 1000) : 0);
+            const lElapsed = getElapsed(loc);
+            if (rElapsed > lElapsed + 1) {
+              loc.elapsed = rt.elapsed || 0;
+              loc.lastStart = rt.lastStart || 0;
+            }
+          }
+          if (rt.costPer10Min != null) loc.costPer10Min = rt.costPer10Min || loc.costPer10Min;
+          if (rt.enabled !== undefined) loc.enabled = rt.enabled;
+          if (rt.assignedTo !== undefined) loc.assignedTo = rt.assignedTo ?? loc.assignedTo;
+          if (rt.name && rt.name !== ('Box ' + rt.displayId)) loc.name = rt.name;
+        }
+        // pastikan field updatedAt ada
+        if (!loc.updatedAt) loc.updatedAt = lUp || Date.now();
+      } else {
+        // timer baru dari remote
+        state.timers.push({ ...rt, updatedAt: rt.updatedAt || rt.lastStart || Date.now() });
+      }
+    });
+
+    // ===== USERS: merge pintar — JANGAN biarkan nama default menimpa nama kustom =====
+    if (data.users && data.users.length) {
+      state.users = mergeUsersSmart(state.users || [], data.users);
+      // Update currentUser displayName jika berubah
+      if (state.currentUser) {
+        const fresh = state.users.find(u => u.username === state.currentUser.username);
+        if (fresh) {
+          state.currentUser = { ...state.currentUser, ...fresh };
+          const ub = document.getElementById('userBadge');
+          if (ub) ub.textContent = fresh.displayName || fresh.username;
+        }
+      }
+      console.log('✅ users merged from', data.deviceId);
+    }
+    if (data.permissions) {
+      // permissions: gabung, true menang (jangan hilangkan izin yang sudah ada)
+      state.permissions = { ...(state.permissions || {}), ...(data.permissions || {}) };
+    }
+
+    if (data.history && Array.isArray(data.history)) {
+      // merge history by stopAt+displayId+by (append, tidak timpa)
+      const seen = new Set((state.history || []).map(h => (h.stopAt || '') + '_' + (h.displayId || '') + '_' + (h.by || '')));
+      data.history.forEach(h => {
+        const k = (h.stopAt || '') + '_' + (h.displayId || '') + '_' + (h.by || '');
+        if (!seen.has(k)) { state.history.unshift(h); seen.add(k); }
+      });
+      if (state.history.length > 800) state.history = state.history.slice(0, 800);
+    }
+    if (data.kas && Array.isArray(data.kas)) {
+      try {
+        // MERGE KAS BUKAN TIMPA
+        let localKas = [];
+        try { localKas = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch(e){}
+        let localDel = [];
+        try { localDel = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]'); } catch(e){}
+        let remoteDel = Array.isArray(data.kasDel) ? data.kasDel : [];
+        const allDelSet = new Set([...localDel, ...remoteDel]);
+        const mergedMap = {};
+        localKas.forEach(it => { if(it && it.id) mergedMap[it.id] = it; });
+        data.kas.forEach(it => { if(it && it.id) mergedMap[it.id] = it; });
+        let merged = Object.values(mergedMap).filter(it => !allDelSet.has(it.id));
+        merged.sort((a,b) => (b.id||0)-(a.id||0));
+        if (merged.length > 1000) merged = merged.slice(0,1000);
+        localStorage.setItem(LS_KAS, JSON.stringify(merged));
+        localStorage.setItem(LS_KAS_DEL, JSON.stringify([...allDelSet]));
+      } catch (e) { console.warn('kas merge fail', e); }
+    }
+    // Simpan lokal tanpa push ulang
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        timers: state.timers, users: state.users, history: state.history,
+        permissions: state.permissions, lastUpdate: Date.now()
+      }));
+    } catch (e) {}
+    if (state.currentUser) {
+      renderAll();
+      renderRecentHistory();
+      if (document.getElementById('roomForm')?.classList.contains('active')) {
+        refreshRental();
+        updateSaveButtonState();
+      }
+    }
+  } finally {
+    applyingRemote = false;
+  }
+}
+
+const DEFAULT_USERS = [
+  { username: 'owner', password: 'owner123', role: 'owner', displayName: 'OWNER', enabled: true, requirePassword: true },
+  { username: 'kasir1', password: 'kasir123', role: 'kasir', displayName: 'KASIR 1', enabled: true, requirePassword: true },
+  { username: 'kasir2', password: 'kasir123', role: 'kasir', displayName: 'KASIR 2', enabled: true, requirePassword: true }
+];
+
+// True jika displayName masih bawaan default
+function isDefaultDisplayName(username, displayName) {
+  if (!displayName) return true;
+  const map = { owner: 'OWNER', kasir1: 'KASIR 1', kasir2: 'KASIR 2' };
+  if (map[username] && displayName === map[username]) return true;
+  if (displayName === String(username).toUpperCase()) return true;
+  return false;
+}
+function isDefaultPassword(username, password) {
+  const map = { owner: 'owner123', kasir1: 'kasir123', kasir2: 'kasir123' };
+  return !password || password === map[username];
+}
+function isMostlyDefaultUsers(users) {
+  if (!users || !users.length) return true;
+  // kalau ada user di luar owner/kasir1/kasir2 → sudah dikustom
+  const known = { owner: 1, kasir1: 1, kasir2: 1 };
+  if (users.some(u => u && u.username && !known[u.username])) return false;
+  // semua displayName masih default?
+  return users.every(u => isDefaultDisplayName(u.username, u.displayName));
+}
+// Gabung user: nama/password kustom SELALU menang atas default
+function mergeUsersSmart(localUsers, remoteUsers) {
+  const map = {};
+  const put = (u) => {
+    if (!u || !u.username) return;
+    const cur = map[u.username];
+    if (!cur) {
+      map[u.username] = { ...u };
+      return;
+    }
+    // displayName: pilih yang BUKAN default
+    if (isDefaultDisplayName(cur.username, cur.displayName) && !isDefaultDisplayName(u.username, u.displayName)) {
+      cur.displayName = u.displayName;
+    }
+    // password: pilih yang BUKAN default
+    if (isDefaultPassword(cur.username, cur.password) && !isDefaultPassword(u.username, u.password)) {
+      cur.password = u.password;
+    }
+    // enabled: false menang (jangan hidupkan user yang sudah dimatikan)
+    if (u.enabled === false) cur.enabled = false;
+    else if (cur.enabled === undefined) cur.enabled = u.enabled !== false;
+    // requirePassword
+    if (u.requirePassword !== undefined) cur.requirePassword = u.requirePassword;
+    // role & lainnya
+    if (u.role) cur.role = u.role;
+    map[u.username] = cur;
+  };
+  (remoteUsers || []).forEach(put);
+  (localUsers || []).forEach(put);
+  return Object.values(map);
+}
+let usersEditedLocally = false; // true hanya setelah owner simpan settings user
+
+function defaultAssignForId(displayId) {
+  // Kasir1: A–E | Kasir2: F–M
+  const letter = (displayId || '').charAt(0).toUpperCase();
+  if ('ABCDE'.includes(letter)) return 'kasir1';
+  if ('FGHJKLM'.includes(letter)) return 'kasir2';
+  return null;
+}
+function makeDefaultTimers(count = 60) {
+  // A–H, J–M (tanpa I) × 5 = 60 timer
+  const letters = ['A','B','C','D','E','F','G','H','J','K','L','M'];
+  const arr = []; let num = 1;
+  for (let li = 0; li < letters.length && num <= count; li++) {
+    for (let n = 1; n <= 5 && num <= count; n++) {
+      const disp = letters[li] + n;
+      arr.push({
+        num, displayId: disp, name: 'Box ' + disp,
+        status: 'idle', elapsed: 0, lastStart: 0, costPer10Min: 1000,
+        by: '', enabled: true, assignedTo: defaultAssignForId(disp), updatedAt: 0
+      });
+      num++;
+    }
+  }
+  return arr;
+}
+function ensureAllTimers() {
+  // Tambah box yang belum ada tanpa hapus data existing
+  const defaults = makeDefaultTimers(60);
+  const byId = {};
+  state.timers.forEach(t => { byId[t.displayId] = t; });
+  let maxNum = state.timers.reduce((m, t) => Math.max(m, t.num || 0), 0);
+  defaults.forEach(d => {
+    if (!byId[d.displayId]) {
+      maxNum++;
+      state.timers.push({ ...d, num: maxNum });
+    }
+  });
+  // Assign default: A-E → kasir1, F-M → kasir2
+  // Jika assignedTo masih kosong, isi default (manual owner tetap dihormati)
+  state.timers = state.timers.map(t => {
+    let assigned = t.assignedTo;
+    if (assigned === null || assigned === undefined || assigned === '') {
+      assigned = defaultAssignForId(t.displayId);
+    }
+    return {
+      ...t,
+      costPer10Min: t.costPer10Min || 1000,
+      assignedTo: assigned,
+      enabled: t.enabled !== false
+    };
+  });
+}
+// old removed
+function formatTime(sec) {
+  return String(Math.floor(sec/60)).padStart(2,'0') + ':' + String(sec%60).padStart(2,'0');
+}
+function getLocalTodayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function getLocalDateStr(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function formatTglLengkap() {
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const n = new Date();
+  return `${days[n.getDay()]}, ${n.getDate()} ${months[n.getMonth()]} ${n.getFullYear()}`;
+}
+function getWeekRange(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const mon = new Date(d); mon.setDate(d.getDate() + diff);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const f = x => x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0');
+  return { start: f(mon), end: f(sun) };
+}
+
+let state = {
+  timers: [], users: [], history: [], currentUser: null, filterAkun: 'all',
+  permissions: {
+    kasir1CanSeeKasir2: false, kasir1CanPlayKasir2: false,
+    kasir2CanSeeKasir1: false, kasir2CanPlayKasir1: false
+  }
+};
+let laporanState = { mode: 'hari', date: getLocalTodayStr(), akun: 'all' };
+
+// === SEARCH BOX LOGIC V68 - FILTER BY NOMOR BOX ===
+function getLaporanBoxQuery(){
+  try { return (document.getElementById('laporanBoxSearch')?.value || '').trim().toLowerCase(); } catch(e){ return ''; }
+}
+function getRekapBoxQuery(){
+  try { return (document.getElementById('rekapBoxSearch')?.value || '').trim().toLowerCase(); } catch(e){ return ''; }
+}
+function clearLaporanBoxSearch(){
+  const el = document.getElementById('laporanBoxSearch');
+  if(el) el.value = '';
+  renderLaporan();
+}
+function clearRekapBoxSearch(){
+  const el = document.getElementById('rekapBoxSearch');
+  if(el) el.value = '';
+  renderRekap();
+}
+function matchesBoxSearch(h, q){
+  if(!q) return true;
+  q = String(q).toLowerCase().trim();
+  if(!q) return true;
+
+  const dispRaw = String(h.displayId||'').toLowerCase().trim(); // "m5", "a5", "01", "box 02"
+  const dispClean = dispRaw.replace(/\s+/g,''); // "box02"
+  const qClean = q.replace(/\s+/g,'');
+
+  const hasLetter = /[a-z]/.test(qClean);
+  
+  // KALAU ADA HURUF (misal m5, a5, b10): HARUS PAS HURUFNYA
+  if(hasLetter){
+    // 1. exact sama persis: m5 == m5, 01==01
+    if(dispClean === qClean) return true;
+    if(dispRaw === q) return true;
+    // 2. mengandung full string: cari "m5" harus ada "m5" di id, bukan cuma "5"
+    if(dispClean.includes(qClean)) return true;
+    if(dispRaw.includes(q)) return true;
+    return false; // jangan lanjut cek angka doang
+  }
+
+  // KALAU ANGKA DOANG (misal 5, 01, 02): match angka exact, abaikan 0 depan
+  // jadi cari "5" -> muncul "5", "05", "005" saja, bukan "15" atau "a5"
+  const qNum = parseInt(qClean.replace(/[^0-9]/g,''),10);
+  if(isNaN(qNum)) return false;
+
+  // ambil angka dari displayId, tapi kalau displayId ada huruf (a5) -> jangan dianggap murni angka
+  // kalau query angka doang, kita hanya boleh match yang displayId-nya murni angka juga
+  const dispHasLetter = /[a-z]/.test(dispClean);
+  if(dispHasLetter) return false; // query "5" jangan munculkan "a5" / "m5"
+
+  const dNumStr = dispClean.replace(/[^0-9]/g,'');
+  if(!dNumStr) return false;
+  const dNum = parseInt(dNumStr,10);
+  if(isNaN(dNum)) return false;
+
+  // exact angka: 5 == 05 == 005
+  return dNum === qNum;
+}
+
+let rekapState = { mode: 'hari', date: getLocalTodayStr(), akun: 'all' };
+let ketEntries = [];
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state.timers = (saved.timers || makeDefaultTimers(60)).map(t => ({ ...t, assignedTo: t.assignedTo ?? null, enabled: t.enabled !== false, updatedAt: t.updatedAt || t.lastStart || 0 }));
+      state.users = saved.users?.length ? saved.users.map(u => ({
+        ...u,
+        requirePassword: u.requirePassword !== undefined ? u.requirePassword : true,
+        enabled: u.enabled !== false
+      })) : JSON.parse(JSON.stringify(DEFAULT_USERS));
+      state.history = saved.history || [];
+      state.permissions = saved.permissions || {};
+      // migrasi key lama → key dinamis
+      if (state.permissions.kasir1CanSeeKasir2) state.permissions[permKey('kasir1','kasir2','see')] = true;
+      if (state.permissions.kasir1CanPlayKasir2) state.permissions[permKey('kasir1','kasir2','play')] = true;
+      if (state.permissions.kasir2CanSeeKasir1) state.permissions[permKey('kasir2','kasir1','see')] = true;
+      if (state.permissions.kasir2CanPlayKasir1) state.permissions[permKey('kasir2','kasir1','play')] = true;
+      ensureAllTimers();
+      return;
+    }
+  } catch(e) {}
+  state.timers = makeDefaultTimers(60);
+  state.users = JSON.parse(JSON.stringify(DEFAULT_USERS));
+  state.history = [];
+  state.permissions = {
+    kasir1CanSeeKasir2: false, kasir1CanPlayKasir2: false,
+    kasir2CanSeeKasir1: false, kasir2CanPlayKasir1: false
+  };
+  saveState();
+}
+
+// RUMUS BARU - SERVER TIME (OFFLINE-safe)
+let serverTimeOffset = 0;
+function getServerTime() { 
+  return Date.now() + (window.serverTimeOffset||0); 
+}
+
+
+// ===== OWNER VIEW - PASSWORD SAMA DENGAN LOGIN OWNER =====
+const RENTAL_LOCK_PATH='hallouyun/rental_locks_v1';
+let ownerRentalLocks={};
+function initOwnerRentalLocks(){
+  try{
+    if(!firebaseDB){ setTimeout(initOwnerRentalLocks,1000); return; }
+    firebaseDB.ref(RENTAL_LOCK_PATH).on('value', snap=>{
+      ownerRentalLocks=snap.val()||{};
+      if(document.getElementById('roomOwner')?.classList.contains('active')) renderOwnerGrid();
+    });
+  }catch(e){}
+}
+function renderOwnerGrid(){
+  const grid=document.getElementById('ownerGrid'); if(!grid) return;
+  grid.innerHTML='';
+  const LETTERS=['A','B','C','D','E','F','G','H','J','K','L','M'];
+  let used=0, activeCount=0;
+  const timersMap={}; if(state&&state.timers) state.timers.forEach(t=>{timersMap[t.displayId]=t;});
+  LETTERS.forEach(L=>{
+    for(let n=1;n<=5;n++){
+      const id=L+n; const lock=ownerRentalLocks[id]; const timer=timersMap[id];
+      const isEnabled = timer ? (timer.enabled!==false) : true;
+      if(isEnabled) activeCount++; if(lock) used++;
+      const div=document.createElement('div');
+      div.style.cssText='padding:10px;border-radius:14px;font-weight:900;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06);background:white;border:2px solid '+(isEnabled? (lock?'#ef4444':'#22c55e') : '#94a3b8');
+      const checkedAttr = isEnabled ? 'checked' : '';
+      div.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:18px">${id} ${lock?'🔒':''}</div><label style="display:flex;align-items:center;gap:4px;background:#f1f5f9;padding:4px 8px;border-radius:20px;font-size:11px"><input type="checkbox" ${checkedAttr} onchange="toggleBoxAktif('${id}', this.checked)"> ${isEnabled?'BUKA':'TUTUP'}</label></div>
+        <div style="font-size:10px">${!isEnabled?'🚫 TERTUTUP di HP rental':(lock?'🔒 Dipakai HP rental':'✅ BUKA di HP rental')}</div>
+        ${lock? `<button onclick="unlockBoxOwner('${id}')" style="background:#ef4444;color:white;border:none;padding:6px;border-radius:8px;font-weight:900;font-size:10px">LEPAS KUNCI</button>`:''}
+      `;
+      grid.appendChild(div);
+    }
+  });
+  const uEl=document.getElementById('statUsed'); if(uEl) uEl.textContent=used;
+  const fEl=document.getElementById('statFree'); if(fEl) fEl.textContent=60-used;
+  const aEl=document.getElementById('statActive'); if(aEl) aEl.textContent=activeCount;
+}
+function toggleBoxAktif(boxId, isChecked){
+  const timer=state.timers.find(t=>t.displayId===boxId); if(!timer) return;
+  timer.enabled=isChecked; timer.updatedAt=Date.now();
+  if(!isChecked) firebaseDB.ref(RENTAL_LOCK_PATH+'/'+boxId).remove();
+  saveState(); renderTimers(); renderOwnerGrid();
+}
+function unlockBoxOwner(id){ if(!confirm('Lepas kunci '+id+'?')) return; firebaseDB.ref(RENTAL_LOCK_PATH+'/'+id).remove(); }
+function unlockAllRental(){ if(!confirm('Reset semua kunci rental?')) return; const p=prompt('Password owner (sama dengan login owner):'); const ownerUser=(state.users||[]).find(u=>u.username==='owner'); const ownerPass=ownerUser?ownerUser.password:'owner123'; if(p!==ownerPass){ alert('Password salah! Harus sama dengan password login OWNER'); return; } firebaseDB.ref(RENTAL_LOCK_PATH).remove(); }
+function setAllBoxes(open){ if(!confirm((open?'BUKA':'TUTUP')+' semua?')) return; state.timers.forEach(t=>{t.enabled=open; t.updatedAt=Date.now();}); if(!open) firebaseDB.ref(RENTAL_LOCK_PATH).remove(); saveState(); renderTimers(); renderOwnerGrid(); }
+
+// ===== FIX OWNER VIEW - KLIK + PASSWORD SYNC OWNER =====
+let _ownerSheetPatched = false;
+function getOwnerPassword(){
+  try{
+    const fromState = (state && state.users || []).find(u=>u.username==='owner');
+    if(fromState && fromState.password) return fromState.password;
+  }catch(e){}
+  try{
+    const def = (typeof DEFAULT_USERS!=='undefined'? DEFAULT_USERS: []).find(u=>u.username==='owner');
+    if(def && def.password) return def.password;
+  }catch(e){}
+  return 'owner123';
+}
+
+function openOwnerPasswordModal(){
+  // hapus modal lama jika ada
+  const old = document.getElementById('ownerPassModal');
+  if(old) old.remove();
+  const modal = document.createElement('div');
+  modal.id='ownerPassModal';
+  modal.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:20px;width:100%;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,.3)">
+      <div style="font-weight:900;font-size:16px;margin-bottom:8px">🔐 OWNER VIEW</div>
+      <div style="font-size:12px;color:#64748b;margin-bottom:12px">Masukkan password OWNER (otomatis ikut password login owner, kalau owner ganti password ikut ganti)</div>
+      <input id="ownerPassInput" type="password" placeholder="Password owner" style="width:100%;padding:12px;border:2px solid #a78bfa;border-radius:10px;font-weight:800;font-size:14px;margin-bottom:12px">
+      <div style="display:flex;gap:8px">
+        <button id="ownerPassCancel" style="flex:1;padding:12px;border:none;border-radius:10px;background:#e5e7eb;font-weight:900">BATAL</button>
+        <button id="ownerPassOk" style="flex:1;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;font-weight:900">BUKA</button>
+      </div>
+      <div id="ownerPassErr" style="display:none;margin-top:10px;color:#ef4444;font-weight:800;font-size:12px">❌ Password salah!</div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  const input = modal.querySelector('#ownerPassInput');
+  setTimeout(()=>input.focus(),100);
+  const close = ()=> modal.remove();
+  modal.querySelector('#ownerPassCancel').onclick = close;
+  modal.onclick = (e)=>{ if(e.target===modal) close(); };
+  const doCheck = ()=>{
+    const val = input.value;
+    const real = getOwnerPassword();
+    if(val===real){
+      close();
+      // set flag biar tidak minta lagi selama sesi ini
+      try{ sessionStorage.removeItem('ownerViewUnlocked'); }catch(e){} // V71b: jangan simpan session, selalu minta lagi
+      doSwitchToOwner();
+    }else{
+      const err = modal.querySelector('#ownerPassErr');
+      err.style.display='block';
+      input.value=''; input.focus();
+      input.style.borderColor='#ef4444';
+      setTimeout(()=>{ input.style.borderColor='#a78bfa'; }, 800);
+    }
+  };
+  modal.querySelector('#ownerPassOk').onclick = doCheck;
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doCheck(); });
+}
+
+function doSwitchToOwner(){
+  renderOwnerGrid();
+  // pakai switchSheet original yang sudah di-patch aman
+  if(window._origSwitchSheet){
+    window._origSwitchSheet('owner');
+  } else {
+    switchSheet('owner');
+  }
+  // paksa aktif (antisipasi bentrok rumus lama)
+  setTimeout(()=>{
+    document.querySelectorAll('.room').forEach(r=>r.classList.remove('active'));
+    const target=document.getElementById('roomOwner'); if(target) target.classList.add('active');
+    document.querySelectorAll('.sheet-tab').forEach(b=>b.classList.remove('active'));
+    const tab=document.getElementById('sheetOwner'); if(tab) tab.classList.add('active');
+  }, 10);
+}
+
+function addOwnerTabAndPassword(){
+  const tabs=document.getElementById('sheetTabs');
+  if(!tabs) return;
+  
+  // Patch switchSheet hanya sekali
+  if(!_ownerSheetPatched && typeof window.switchSheet==='function'){
+    window._origSwitchSheet = window.switchSheet;
+    window.switchSheet = function(name){
+      if(name==='owner'){
+        try{ renderOwnerGrid(); }catch(e){}
+      }
+      // panggil original
+      if(window._origSwitchSheet) window._origSwitchSheet(name);
+      // V71b: kalau pindah dari owner ke menu lain, hapus flag biar nanti balik ke owner minta password lagi
+      if(name!=='owner'){ try{ sessionStorage.removeItem('ownerViewUnlocked'); }catch(e){} }
+      // pastikan owner aktif kalau name owner
+      if(name==='owner'){
+        document.querySelectorAll('.room').forEach(r=>r.classList.remove('active'));
+        const target=document.getElementById('roomOwner'); if(target) target.classList.add('active');
+        document.querySelectorAll('.sheet-tab').forEach(b=>b.classList.remove('active'));
+        const tab=document.getElementById('sheetOwner'); if(tab) tab.classList.add('active');
+      }
+    };
+    _ownerSheetPatched = true;
+  }
+
+  if(document.getElementById('sheetOwner')) return;
+  
+  const btn=document.createElement('button');
+  btn.id='sheetOwner';
+  btn.type='button';
+  btn.className='sheet-tab';
+  btn.textContent='👑 OWNER VIEW';
+  btn.style.cssText='background:linear-gradient(135deg,#7c3aed,#5b21b6);color:white;pointer-events:auto;z-index:10;position:relative;';
+  btn.onclick=function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    // V71b - selalu minta password tiap pindah menu (hapus cek session)
+    // tidak ada auto-unlock
+    openOwnerPasswordModal();
+  };
+  tabs.appendChild(btn);
+}
+
+// init aman - tunggu DOM + Firebase
+function initOwnerViewFix(){
+  addOwnerTabAndPassword();
+  try{ if(typeof initOwnerRentalLocks==='function') initOwnerRentalLocks(); }catch(e){}
+  // jika password owner berubah, reset unlock session biar harus login ulang
+  try{
+    let lastPass = getOwnerPassword();
+    setInterval(()=>{
+      const cur = getOwnerPassword();
+      if(cur!==lastPass){
+        lastPass=cur;
+        try{ sessionStorage.removeItem('ownerViewUnlocked'); }catch(e){}
+      }
+    }, 2000);
+  }catch(e){}
+}
+setTimeout(initOwnerViewFix, 800);
+setTimeout(initOwnerViewFix, 2000);
+setTimeout(initOwnerViewFix, 4000);
+
+
+function saveState() {
+  if (applyingRemote) return; // jangan loop saat terima remote
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      timers: state.timers, users: state.users, history: state.history,
+      permissions: state.permissions, lastUpdate: Date.now()
+    }));
+  } catch(e) {}
+  // Push Firebase segera (throttle 80ms di dalam pushOnline)
+  pushOnline(false);
+}
+
+// LOGIN
+function renderLoginOptions() {
+  const sel = document.getElementById('loginUsername');
+  if (!sel) return;
+  sel.innerHTML = '';
+  state.users.filter(u => u.enabled !== false).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.username; opt.textContent = u.displayName;
+    sel.appendChild(opt);
+  });
+}
+// Idle hanya saat halaman terbuka. Refresh = session TETAP (tidak logout).
+const IDLE_LIMIT_MS = 12 * 60 * 60 * 1000;
+let lastActivityAt = Date.now();
+let idleWatchTimer = null;
+let idleListenersBound = false;
+let pageLoadedAt = Date.now();
+let sessionRestored = false;
+
+function writeSessionRaw(username) {
+  const payload = JSON.stringify({
+    username: username,
+    lastActivity: Date.now(),
+    at: Date.now(),
+    v: 6
+  });
+  try { localStorage.setItem(LS_LOGIN, payload); } catch (e) {}
+  try { sessionStorage.setItem(LS_LOGIN, payload); } catch (e) {}
+  // cookie backup (1 tahun) — anti hilang di beberapa browser HP
+  try {
+    const exp = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = 'hallouyun_user=' + encodeURIComponent(username) + '; expires=' + exp + '; path=/; SameSite=Lax';
+  } catch (e) {}
+}
+
+function readSessionRaw() {
+  // 1) localStorage baru
+  try {
+    const a = localStorage.getItem(LS_LOGIN);
+    if (a) { const p = JSON.parse(a); if (p && p.username) return p; }
+  } catch (e) {}
+  // 2) sessionStorage
+  try {
+    const b = sessionStorage.getItem(LS_LOGIN);
+    if (b) { const p = JSON.parse(b); if (p && p.username) return p; }
+  } catch (e) {}
+  // 3) key lama v5
+  try {
+    const c = localStorage.getItem(LS_LOGIN_OLD);
+    if (c) { const p = JSON.parse(c); if (p && p.username) return p; }
+  } catch (e) {}
+  // 4) cookie backup
+  try {
+    const m = document.cookie.match(/(?:^|; )hallouyun_user=([^;]*)/);
+    if (m && m[1]) return { username: decodeURIComponent(m[1]), lastActivity: Date.now(), at: Date.now() };
+  } catch (e) {}
+  return null;
+}
+
+function clearSessionRaw() {
+  try { localStorage.removeItem(LS_LOGIN); } catch (e) {}
+  try { localStorage.removeItem(LS_LOGIN_OLD); } catch (e) {}
+  try { sessionStorage.removeItem(LS_LOGIN); } catch (e) {}
+  try { document.cookie = 'hallouyun_user=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'; } catch (e) {}
+}
+
+function saveLoginSession(username) {
+  lastActivityAt = Date.now();
+  writeSessionRaw(username);
+}
+
+function touchActivity() {
+  if (!state.currentUser) return;
+  lastActivityAt = Date.now();
+  writeSessionRaw(state.currentUser.username);
+  updateIdleBadge();
+}
+
+function updateIdleBadge() {
+  const el = document.getElementById('idleBadge');
+  if (!el || !state.currentUser) {
+    if (el) el.style.display = 'none';
+    return;
+  }
+  // Grace 60 detik setelah load — jangan auto-logout saat refresh
+  if (Date.now() - pageLoadedAt < 60000) {
+    el.style.display = 'inline-block';
+    el.textContent = 'OK';
+    el.style.background = 'rgba(34,197,94,0.85)';
+    el.style.color = '#fff';
+    return;
+  }
+  const left = Math.max(0, IDLE_LIMIT_MS - (Date.now() - lastActivityAt));
+  const m = Math.floor(left / 60000);
+  const s = Math.floor((left % 60000) / 1000);
+  el.style.display = 'inline-block';
+  el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  if (left < 5 * 60 * 1000) {
+    el.style.background = '#ef4444';
+    el.style.color = '#fff';
+  } else {
+    el.style.background = 'rgba(255,255,255,0.2)';
+    el.style.color = '#fde047';
+  }
+  if (left <= 0) {
+    logout(true);
+  }
+}
+
+function startIdleWatch() {
+  if (idleWatchTimer) clearInterval(idleWatchTimer);
+  idleWatchTimer = setInterval(updateIdleBadge, 1000);
+  if (!idleListenersBound) {
+    idleListenersBound = true;
+    ['pointerdown', 'touchstart', 'keydown', 'click', 'scroll'].forEach(ev => {
+      document.addEventListener(ev, touchActivity, { passive: true });
+    });
+  }
+  updateIdleBadge();
+}
+
+function findUserForSession(username) {
+  if (!username) return null;
+  let user = (state.users || []).find(x => x.username === username && x.enabled !== false);
+  if (user) return user;
+  user = (state.users || []).find(x => x.username === username);
+  if (user) return user;
+  user = (DEFAULT_USERS || []).find(x => x.username === username);
+  if (user) {
+    if (!(state.users || []).find(u => u.username === user.username)) {
+      state.users.push(JSON.parse(JSON.stringify(user)));
+    }
+    return (state.users || []).find(x => x.username === username) || user;
+  }
+  return null;
+}
+
+function enterApp(user) {
+  if (!user) return;
+  sessionRestored = true;
+  state.currentUser = user;
+  state.filterAkun = user.username;
+  lastActivityAt = Date.now();
+  saveLoginSession(user.username);
+  const lm = document.getElementById('loginModal');
+  if (lm) lm.style.display = 'none';
+  const fm = document.getElementById('floatingMenu');
+  if (fm) fm.style.display = 'flex';
+  const st = document.getElementById('sheetTabs');
+  if (st) st.style.display = 'flex';
+  const ub = document.getElementById('userBadge');
+  if (ub) ub.textContent = user.displayName || user.username;
+  try { switchSheet('timer'); } catch (e) {}
+  try { renderAll(); } catch (e) {}
+  try { startTicker(); } catch (e) {}
+  try { initForm(); } catch (e) {}
+  startIdleWatch();
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUsername').value.trim();
+  const p = document.getElementById('loginPassword').value.trim();
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  const user = state.users.find(x => x.username === u && x.enabled !== false);
+  if (!user) { err.textContent = 'User tidak ditemukan / non-aktif'; err.style.display = 'block'; return; }
+  if (user.role === 'owner') {
+    if (!p || user.password !== p) { err.textContent = 'Password OWNER salah'; err.style.display = 'block'; return; }
+  } else {
+    const needPass = user.requirePassword !== false;
+    if (needPass && user.password !== p) { err.textContent = 'Password salah'; err.style.display = 'block'; return; }
+  }
+  enterApp(user);
+}
+
+
+
+let activeDevices = {};
+function trackDevicePresence() {
+  if (!firebaseDB) return;
+  try {
+    const devRef = firebaseDB.ref(FB_PATH + '/presence/' + DEVICE_ID);
+    devRef.set({ online: true, lastSeen: Date.now(), user: state.currentUser?.username || 'unknown' });
+    devRef.onDisconnect().remove();
+    // listen all devices
+    firebaseDB.ref(FB_PATH + '/presence').on('value', snap => {
+      const val = snap.val() || {};
+      activeDevices = val;
+      const count = Object.keys(val).length;
+      const el = document.getElementById('onlineText');
+      if (el) {
+        el.textContent = 'ONLINE (' + count + ' HP)';
+      }
+    });
+  } catch(e){}
+}
+
+function autoSyncOnLogin() {
+  if (!firebaseDB) return;
+  firebaseDB.ref(FB_PATH).once('value').then(snap => {
+    const data = snap.val();
+    if (data) {
+      applyRemoteState(data);
+      console.log('autoSyncOnLogin OK');
+    }
+  }).catch(()=>{});
+}
+
+function checkExistingLogin() {
+  // REFRESH = TIDAK LOGOUT. Coba restore dari localStorage / sessionStorage / cookie.
+  if (sessionRestored && state.currentUser) return true;
+  try {
+    const saved = readSessionRaw();
+    if (saved && saved.username) {
+      const user = findUserForSession(saved.username);
+      if (user) {
+        enterApp(user);
+        return true;
+      }
+      // User belum ketemu di state — JANGAN hapus session, coba lagi nanti
+      return false;
+    }
+  } catch (e) {
+    console.warn('checkExistingLogin', e);
+  }
+  // Tidak ada session → tampilkan login
+  if (!state.currentUser) {
+    const lm = document.getElementById('loginModal');
+    if (lm) lm.style.display = 'flex';
+    const fm = document.getElementById('floatingMenu');
+    if (fm) fm.style.display = 'none';
+    const st = document.getElementById('sheetTabs');
+    if (st) st.style.display = 'none';
+    const idleEl = document.getElementById('idleBadge');
+    if (idleEl) idleEl.style.display = 'none';
+  }
+  return false;
+}
+
+function logout(autoIdle) {
+  sessionRestored = false;
+  state.currentUser = null;
+  clearSessionRaw();
+  if (idleWatchTimer) { clearInterval(idleWatchTimer); idleWatchTimer = null; }
+  const lm = document.getElementById('loginModal');
+  if (lm) lm.style.display = 'flex';
+  const fm = document.getElementById('floatingMenu');
+  if (fm) fm.style.display = 'none';
+  const st = document.getElementById('sheetTabs');
+  if (st) st.style.display = 'none';
+  const idleEl = document.getElementById('idleBadge');
+  if (idleEl) idleEl.style.display = 'none';
+  const pw = document.getElementById('loginPassword');
+  if (pw) pw.value = '';
+  try { closeLaporan(); } catch (e) {}
+  try { closeSettings(); } catch (e) {}
+  if (autoIdle) {
+    alert('Logout otomatis: tidak ada aktivitas 12 jam (halaman terbuka).');
+  }
+}
+
+// SHEET
+function switchSheet(name) {
+  document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('.sheet-tab').forEach(t => t.classList.remove('active'));
+  const room = document.getElementById('room' + name.charAt(0).toUpperCase() + name.slice(1));
+  const tab = document.getElementById('sheet' + name.charAt(0).toUpperCase() + name.slice(1));
+  if (room) room.classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (name === 'form') { initForm(); refreshRental(); hitungTotal(); updateSaveButtonState(); }
+  if (name === 'timer') renderAll();
+  if (name === 'rekap') { initRekap(); renderRekap(); }
+}
+
+// MONEY + TIMER (sama V4)
+function getTodayHistory() {
+  // Hari stop menentukan hari laporan (timer bisa nyambung dari kemarin)
+  const today = getLocalTodayStr();
+  return state.history.filter(h => {
+    if (!h || h.hidden || h.isKas) return false;
+    const ts = h.stopAt || h.playAt;
+    return ts && getLocalDateStr(ts) === today;
+  });
+}
+function permKey(viewerUser, targetUser, type) {
+  // type: 'see' | 'play'
+  return viewerUser + 'Can' + (type === 'play' ? 'Play' : 'See') + '_' + targetUser;
+}
+function canSeeUser(viewer, target) {
+  if (!viewer) return false;
+  if (viewer.role === 'owner') return true;
+  if (viewer.username === target) return true;
+  return !!(state.permissions[permKey(viewer.username, target, 'see')]);
+}
+function canPlayUser(viewer, targetUsername) {
+  if (!viewer) return false;
+  if (viewer.role === 'owner') return true;
+  if (viewer.username === targetUsername) return true;
+  return !!(state.permissions[permKey(viewer.username, targetUsername, 'play')]);
+}
+function moneyCardClass(username, role) {
+  if (role === 'owner' || username === 'owner') return 'owner';
+  if (username === 'kasir1') return 'kasir1';
+  if (username === 'kasir2') return 'kasir2';
+  // user baru: rotate warna
+  const hash = (username || '').charCodeAt(0) % 3;
+  return hash === 0 ? 'kasir1' : (hash === 1 ? 'kasir2' : 'owner');
+}
+
+let moneyBlurTimer = null;
+let moneyBlurRemaining = 0;
+function setupMoneyBlur() {
+  const mt = document.getElementById('moneyTop');
+  if (!mt) return;
+  if (!state.currentUser) return;
+  if (state.currentUser.role === 'owner') {
+    mt.classList.remove('kasir-mode', 'revealed');
+    if (moneyBlurTimer) { clearTimeout(moneyBlurTimer); moneyBlurTimer = null; }
+    return;
+  }
+  // kasir -> blur mode
+  mt.classList.add('kasir-mode');
+  mt.classList.remove('revealed');
+  // klik sekali untuk semua
+  mt.onclick = function(e) {
+    if (mt.classList.contains('revealed')) {
+      // kalau sudah revealed, klik lagi = blur lagi manual
+      mt.classList.remove('revealed');
+      if (moneyBlurTimer) { clearTimeout(moneyBlurTimer); moneyBlurTimer = null; }
+      return;
+    }
+    mt.classList.add('revealed');
+    // auto blur lagi 10 menit
+    if (moneyBlurTimer) clearTimeout(moneyBlurTimer);
+    moneyBlurTimer = setTimeout(() => {
+      mt.classList.remove('revealed');
+      moneyBlurTimer = null;
+      // vibrate kalau ada
+      if (navigator.vibrate) navigator.vibrate([100]);
+    }, 10 * 60 * 1000); // 10 menit
+    if (navigator.vibrate) navigator.vibrate([80]);
+  };
+}
+
+function renderMoneyTop() {
+  const el = document.getElementById('moneyTop');
+  if (!el || !state.currentUser) return;
+  const todayHist = getTodayHistory();
+  const per = {};
+  todayHist.forEach(h => { per[h.by] = (per[h.by] || 0) + (h.cost || 0); });
+
+  let html = '';
+  if (state.currentUser.role === 'owner') {
+    const total = todayHist.reduce((s, h) => s + (h.cost || 0), 0);
+    html += `<div class="money-card owner"><div class="label">OWNER</div><div class="value">Rp ${(per.owner||0).toLocaleString('id-ID')}</div></div>`;
+    state.users.filter(u => u.role === 'kasir' && u.enabled !== false).forEach(u => {
+      const cls = moneyCardClass(u.username, u.role);
+      html += `<div class="money-card ${cls}"><div class="label">${u.displayName}</div><div class="value">Rp ${(per[u.username]||0).toLocaleString('id-ID')}</div></div>`;
+    });
+    html += `<div class="money-card total"><div class="label">TOTAL</div><div class="value">Rp ${total.toLocaleString('id-ID')}</div></div>`;
+  } else {
+    // Kasir: diri sendiri + yang boleh dilihat + TOTAL jika ada yang dilihat
+    let visibleTotal = 0;
+    const my = per[state.currentUser.username] || 0;
+    visibleTotal += my;
+    const cls = moneyCardClass(state.currentUser.username, state.currentUser.role);
+    html += `<div class="money-card ${cls}" style="flex:1"><div class="label">${state.currentUser.displayName}</div><div class="value">Rp ${my.toLocaleString('id-ID')}</div></div>`;
+
+    let hasOther = false;
+    state.users.filter(u => u.role === 'kasir' && u.username !== state.currentUser.username && u.enabled !== false).forEach(u => {
+      if (canSeeUser(state.currentUser, u.username)) {
+        hasOther = true;
+        const amt = per[u.username] || 0;
+        visibleTotal += amt;
+        const c = moneyCardClass(u.username, u.role);
+        html += `<div class="money-card ${c}" style="flex:1"><div class="label">${u.displayName}</div><div class="value">Rp ${amt.toLocaleString('id-ID')}</div></div>`;
+      }
+    });
+    // TOTAL hanya muncul jika bisa lihat kasir lain
+    if (hasOther) {
+      html += `<div class="money-card total" style="flex:1"><div class="label">TOTAL</div><div class="value">Rp ${visibleTotal.toLocaleString('id-ID')}</div></div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+function renderAkunFilter() {
+  const el = document.getElementById('akunFilter');
+  if (!el || !state.currentUser) return;
+  let html = '';
+  const me = state.currentUser.username;
+  const markSelf = (u) => (u.username === me
+    ? `<button class="akun-btn ${state.filterAkun===u.username?'active':''}" onclick="setFilterAkun('${u.username}')" style="border:2px solid #fde047;box-shadow:0 0 0 2px #eab308">${u.displayName} ★</button>`
+    : `<button class="akun-btn ${state.filterAkun===u.username?'active':''}" onclick="setFilterAkun('${u.username}')">${u.displayName}</button>`);
+
+  if (state.currentUser.role === 'owner') {
+    state.users.filter(u => u.enabled !== false).forEach(u => { html += markSelf(u); });
+  } else {
+    // diri sendiri selalu ada + tanda ★
+    const selfUser = state.users.find(u => u.username === me) || state.currentUser;
+    html += markSelf(selfUser);
+    state.users.filter(u => u.role === 'kasir' && u.username !== me && u.enabled !== false).forEach(u => {
+      if (canSeeUser(state.currentUser, u.username)) html += markSelf(u);
+    });
+  }
+  if (!state.filterAkun || state.filterAkun === 'all') {
+    state.filterAkun = me;
+  }
+  el.innerHTML = html;
+}
+function setFilterAkun(a) { state.filterAkun = a; renderAkunFilter(); renderTimers(); setTimeout(updateSisaHp,60); }
+
+function updateSisaHp(){
+  try{
+    let list=(state.timers||[]).filter(t=>t.enabled!==false);
+    if(state.filterAkun && state.filterAkun!=='owner'){
+      list=list.filter(t=>t.assignedTo===state.filterAkun);
+    }
+    const free=list.filter(t=>t.status==='idle').length;
+    const total=list.length;
+    const badge=document.getElementById('sisaHpBadge');
+    if(badge) badge.innerHTML=`SISA: <span id="sisaHpCount">${free}</span> / ${total} FREE`;
+  }catch(e){}
+}
+
+
+function getElapsed(t) {
+  if (!t) return 0;
+  if (t.status === 'active' && t.lastStart) {
+    const now = getServerTime();
+    const running = Math.floor((now - t.lastStart) / 1000);
+    return (t.elapsed || 0) + Math.max(0, running);
+  }
+  return t.elapsed || 0;
+}
+
+function canUseTimer(t) {
+  // Boleh PLAY / STOP / PINDAH
+  if (!state.currentUser) return false;
+  if (state.currentUser.role === 'owner') return true;
+  if (!t.enabled) return false;
+  // Timer assign ke diri sendiri → boleh
+  if (t.assignedTo === state.currentUser.username) return true;
+  // Timer assign ke kasir lain → hanya jika ada permission PLAY
+  if (t.assignedTo && canPlayUser(state.currentUser, t.assignedTo)) return true;
+  return false;
+}
+function canSeeTimer(t) {
+  // Boleh DILIHAT (belum tentu boleh play)
+  if (!state.currentUser) return false;
+  if (state.currentUser.role === 'owner') return true; // Owner lihat semua
+  if (!t.enabled) return false;
+  if (t.assignedTo === state.currentUser.username) return true;
+  // Timer kasir lain + permission lihat → hanya lihat
+  if (t.assignedTo && canSeeUser(state.currentUser, t.assignedTo)) return true;
+  return false;
+}
+function renderTimers() {
+  const grid = document.getElementById('timerGrid');
+  if (!grid) return;
+  let html = '';
+  // Filter timer yang boleh dilihat
+  let list = state.timers.filter(t => canSeeTimer(t));
+  // Filter by akun button
+  if (state.filterAkun && state.currentUser) {
+    if (state.currentUser.role === 'owner') {
+      if (state.filterAkun === 'owner') {
+        // Owner klik dirinya → tampilkan SEMUA timer (owner punya semua)
+        list = state.timers.filter(t => t.enabled !== false);
+      } else {
+        // Owner klik kasir → tampilkan timer yang di-assign ke kasir itu
+        list = state.timers.filter(t => t.enabled !== false && t.assignedTo === state.filterAkun);
+      }
+    } else {
+      // Kasir
+      if (state.filterAkun === state.currentUser.username) {
+        list = state.timers.filter(t => t.assignedTo === state.currentUser.username && t.enabled !== false);
+      } else if (canSeeUser(state.currentUser, state.filterAkun)) {
+        // Lihat timer kasir lain (view only)
+        list = state.timers.filter(t => t.assignedTo === state.filterAkun && t.enabled !== false);
+      } else {
+        list = state.timers.filter(t => t.assignedTo === state.currentUser.username && t.enabled !== false);
+      }
+    }
+  }
+  if (list.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:white;font-weight:800;background:rgba(0,0,0,0.2);border-radius:12px">Belum ada timer yang di-assign. Owner harus assign timer di Settings.</div>';
+    return;
+  }
+  list.forEach(t => {
+    const elapsed = getElapsed(t);
+    const cost = calcCost(elapsed, t.costPer10Min);
+    const statusClass = !t.enabled ? 'disabled-timer' : (t.status === 'active' ? 'active' : (t.status === 'paused' ? 'paused' : 'idle'));
+    const can = canUseTimer(t);
+    if (statusClass === 'idle') {
+      // V67 DOUBLE TAP
+      html += `<div class="timer-card ${statusClass}" data-timer-num="${t.num}" onclick="handleDoubleTap(${t.num})">
+      <div class="timer-content"><div class="timer-num">${t.displayId}</div></div>
+    </div>`;
+    } else {
+    html += `<div class="timer-card ${statusClass}">
+      <div class="btn-nama">${t.name||t.displayId}</div>
+      <div class="top-actions">
+        <button class="btn-pindah" onclick="openPindah(${t.num}, 'pindah')" ${t.status==='idle'||!can?'disabled style="opacity:0.4"':''}>PINDAH</button>
+        <button class="btn-tukar" onclick="openPindah(${t.num}, 'tukar')" ${t.status==='idle'||!can?'disabled style="opacity:0.4"':''}>TUKAR</button>
+      </div>
+      <div class="timer-content">
+        <div class="timer-num">${t.displayId}</div>
+        <div class="timer-time">${formatTime(elapsed)}</div>
+        <div class="timer-cost">Rp ${cost.toLocaleString('id-ID')}</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-play" onclick="handleDoubleTap(${t.num})" style="${!can?'opacity:0.55':''}">${t.status==='active'?'⏸ PAUSE':'▶ PLAY'}</button>
+        <button class="btn-stop" onclick="doStop(${t.num})" style="${t.status==='idle'||!can?'opacity:0.55':''}">⏹ STOP</button>
+      </div>
+    </div>`;
+    }
+  });
+  grid.innerHTML = html;
+}
+
+let _lastTap={};
+function handleDoubleTap(num){
+  const now=Date.now();
+  const last=_lastTap[num]||0;
+  if(now-last<350 && now-last>0){
+    _lastTap[num]=0;
+    if(navigator.vibrate) navigator.vibrate(40);
+    const c=document.querySelector(`.timer-card[data-timer-num="${num}"]`);
+    if(c){ c.style.transform='scale(0.92)'; setTimeout(()=>c.style.transform='',120); }
+    togglePlay(num);
+    return;
+  }
+  _lastTap[num]=now;
+  const c=document.querySelector(`.timer-card[data-timer-num="${num}"]`);
+  if(c && !c.querySelector('.dbl-hint')){
+    const h=document.createElement('div');
+    h.className='dbl-hint';
+    h.textContent='KETUK 2X';
+    h.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#0c4a6e;color:white;padding:5px 9px;border-radius:8px;font-size:10px;font-weight:900;z-index:30;pointer-events:none;';
+    c.appendChild(h);
+    setTimeout(()=>{ if(h.parentNode) h.remove(); },800);
+  }
+  setTimeout(()=>{ if(_lastTap[num]===now) _lastTap[num]=0; },400);
+}
+
+function togglePlay(num) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t) return;
+  if (!canUseTimer(t)) {
+    alert('Tidak bisa play dan stop, hubungi owner');
+    return;
+  }
+  const now = Date.now();
+  if (t.status === 'active') {
+    t.elapsed = getElapsed(t); t.status = 'paused'; t.lastStart = 0;
+  } else {
+    // SELALU set by = user yang sedang login (biar uang masuk ke kasir yang benar)
+    t.by = state.currentUser.username;
+    if (t.status === 'idle') t.elapsed = 0;
+    t.status = 'active'; t.lastStart = now;
+  }
+  t.updatedAt = now; // LWW: klik ini yang menang di HP lain
+  localActionAt = now;
+  saveState();
+  pushOnline(true);
+  renderTimers(); renderMoneyTop(); updateSaveButtonState();
+}
+function doStop(num) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t || t.status === 'idle') return;
+  if (!canUseTimer(t)) {
+    alert('Tidak bisa play dan stop, hubungi owner');
+    return;
+  }
+  const elapsed = getElapsed(t);
+  const cost = calcCost(elapsed, t.costPer10Min);
+  // playAt: hitung dari elapsed
+  let playAt = Date.now() - elapsed * 1000;
+  if (t.lastStart && t.status === 'active') {
+    playAt = t.lastStart - (t.elapsed || 0) * 1000;
+  }
+  // RULE BARU: siapa tekan STOP → uang masuk ke akun itu (bukan t.by lama)
+  const byUser = state.currentUser.username;
+  const now = Date.now();
+  state.history.unshift({
+    timerNum: t.num,
+    displayId: t.displayId,
+    by: byUser,
+    cost,
+    playAt,
+    stopAt: now,
+    elapsed,
+    hidden: false
+  });
+  if (state.history.length > 800) state.history = state.history.slice(0, 800);
+  t.status = 'idle';
+  t.elapsed = 0;
+  t.lastStart = 0;
+  t.by = '';
+  t.updatedAt = now; // LWW: STOP ini yang menang di HP lain
+  localActionAt = now;
+  saveState();
+  pushOnline(true); // sync langsung ke HP lain
+  renderTimers();
+  renderMoneyTop();
+  renderRecentHistory();
+  updateSaveButtonState();
+  showStopNotif(t.displayId, cost);
+  if (navigator.vibrate) navigator.vibrate([200, 80, 200]);
+}
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    for (let i = 0; i < 3; i++) {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.setValueAtTime(880 + i * 120, ctx.currentTime + i * 0.18);
+      g.gain.setValueAtTime(0.7, ctx.currentTime + i * 0.18);
+      g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.18 + 0.35);
+      o.start(ctx.currentTime + i * 0.18);
+      o.stop(ctx.currentTime + i * 0.18 + 0.4);
+    }
+  } catch (e) {}
+}
+function showStopNotif(displayId, cost) {
+  // Hanya 1 notif (yang terakhir)
+  let stack = document.getElementById('notifStack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.id = 'notifStack';
+    stack.style.cssText = 'position:fixed;top:50px;right:10px;z-index:9999;pointer-events:none;';
+    document.body.appendChild(stack);
+  }
+  stack.innerHTML = ''; // hapus notif lama
+  const el = document.createElement('div');
+  el.style.cssText = 'background:linear-gradient(135deg,#fde047,#facc15,#eab308);border:3px solid #a16207;border-radius:16px;padding:16px 20px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.35);min-width:150px;pointer-events:auto;animation:popIn 0.25s ease;';
+  el.innerHTML = `<div style="font-size:40px;font-weight:900;color:#422006;line-height:1">${displayId}</div>
+    <div style="font-size:24px;font-weight:900;color:#14532d;margin-top:8px;background:white;padding:8px 14px;border-radius:12px;display:inline-block;border:2px solid #22c55e">Rp ${cost.toLocaleString('id-ID')}</div>`;
+  stack.appendChild(el);
+  playBeep();
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.4s'; setTimeout(() => el.remove(), 400); }, 5000);
+}
+
+let pindahFrom = null;
+let pindahListCache = [];
+
+let pindahMode = 'all';
+function setPindahMode(mode){ pindahMode = mode; const bP=document.getElementById('btnModePindah'); const bT=document.getElementById('btnModeTukar'); if(bP) bP.style.background = mode==='pindah' ? '#16a34a' : '#fff'; if(bP) bP.style.color = mode==='pindah' ? 'white' : '#166534'; if(bT) bT.style.background = mode==='tukar' ? '#ea580c' : '#fff'; if(bT) bT.style.color = mode==='tukar' ? 'white' : '#9a3412'; filterPindahList(); }
+function openPindah(num, mode) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t || t.status === 'idle' || !canUseTimer(t)) return;
+  pindahFrom = num;
+  if(mode) pindahMode = mode; else pindahMode = 'all';
+  // update tombol aktif di modal
+  setTimeout(()=>setPindahMode(pindahMode), 10);
+  document.getElementById('pindahTitle').textContent = `Pindah / Tukar dari ${t.displayId} (${formatTime(getElapsed(t))})`;
+  const search = document.getElementById('pindahSearch');
+  if (search) search.value = '';
+  // Build cache: targets user can control
+  pindahListCache = state.timers.filter(x => x.enabled && x.num !== num && canUseTimer(x)).map(x => {
+    const busy = x.status === 'active' || x.status === 'paused';
+    return {
+      num: x.num,
+      displayId: x.displayId,
+      name: x.name || '',
+      busy,
+      elapsed: getElapsed(x),
+      cost: calcCost(getElapsed(x), x.costPer10Min)
+    };
+  });
+  filterPindahList();
+  document.getElementById('pindahModal').style.display = 'flex';
+}
+
+function filterPindahList() {
+  const q = ((document.getElementById('pindahSearch')?.value) || '').trim().toLowerCase();
+  let list = pindahListCache;
+  if (q) {
+    list = list.filter(x =>
+      x.displayId.toLowerCase().includes(q) ||
+      (x.name || '').toLowerCase().includes(q)
+    );
+  }
+  let html = '';
+  if (!list.length) {
+    html = '<div style="text-align:center;padding:16px;color:#94a3b8;font-weight:700">Tidak ada timer yang cocok</div>';
+  } else {
+    // Filter berdasarkan mode tombol: pindah = kosong saja, tukar = nyala saja
+    let kosong = list.filter(x => !x.busy);
+    let nyala = list.filter(x => x.busy);
+    if(pindahMode === 'pindah') nyala = [];
+    if(pindahMode === 'tukar') kosong = [];
+    const labelEl = document.getElementById('pindahModeLabel');
+    if(labelEl){
+      if(pindahMode==='pindah') labelEl.textContent = 'Menampilkan 🟢 PINDAH saja (ke box kosong)';
+      else if(pindahMode==='tukar') labelEl.textContent = 'Menampilkan 🔄 TUKAR saja (dengan yang nyala)';
+      else labelEl.textContent = 'Menampilkan semua (PINDAH + TUKAR)';
+    }
+    if (kosong.length) {
+      html += '<div style="font-size:12px;font-weight:900;color:#fff;background:#15803d;padding:6px 10px;border-radius:8px;margin:6px 0 6px">🟢 PINDAH → timer kosong</div>';
+      kosong.forEach(x => {
+        html += `<div class="pindah-item" style="background:#166534;color:white;border:3px solid #4ade80;margin-bottom:6px" onclick="doPindah(${x.num}, false)">
+          <span><b style="font-size:15px">${x.displayId}</b> · ${x.name}</span>
+          <span style="font-size:13px;font-weight:900;background:#4ade80;color:#14532d;padding:4px 10px;border-radius:8px">PINDAH</span>
+        </div>`;
+      });
+    }
+    if (nyala.length) {
+      html += '<div style="font-size:12px;font-weight:900;color:#fff;background:#c2410c;padding:6px 10px;border-radius:8px;margin:10px 0 6px">🔄 TUKAR → timer yang nyala</div>';
+      nyala.forEach(x => {
+        html += `<div class="pindah-item" style="background:#9a3412;color:white;border:3px solid #fb923c;margin-bottom:6px" onclick="doPindah(${x.num}, true)">
+          <span><b style="font-size:15px">${x.displayId}</b> · ${x.name}<br><small style="opacity:0.9">${formatTime(x.elapsed)} · Rp ${x.cost.toLocaleString('id-ID')}</small></span>
+          <span style="font-size:13px;font-weight:900;background:#fb923c;color:#7c2d12;padding:4px 10px;border-radius:8px">TUKAR</span>
+        </div>`;
+      });
+    }
+  }
+  document.getElementById('pindahList').innerHTML = html;
+}
+
+function doPindah(toNum, isTukar) {
+  if (pindahFrom === null) return;
+  const from = state.timers.find(x => x.num === pindahFrom);
+  const to = state.timers.find(x => x.num === toNum);
+  if (!from || !to || !canUseTimer(to) || !canUseTimer(from)) return;
+
+  const now = Date.now();
+  if (isTukar) {
+    // TUKAR: saling tukar status, elapsed, by, lastStart
+    const fromElapsed = getElapsed(from);
+    const toElapsed = getElapsed(to);
+    const fromStatus = from.status;
+    const toStatus = to.status;
+    const fromBy = from.by;
+    const toBy = to.by;
+    const fromCost = from.costPer10Min;
+    const toCost = to.costPer10Min;
+
+    // Snapshot elapsed as frozen base, then restart clock if active
+    from.elapsed = toElapsed;
+    to.elapsed = fromElapsed;
+    from.status = toStatus;
+    to.status = fromStatus;
+    from.by = toBy || state.currentUser.username;
+    to.by = fromBy || state.currentUser.username;
+    from.costPer10Min = toCost;
+    to.costPer10Min = fromCost;
+    from.lastStart = (from.status === 'active') ? now : 0;
+    to.lastStart = (to.status === 'active') ? now : 0;
+  } else {
+    // PINDAH saja: hanya ke timer kosong
+    if (to.status !== 'idle') {
+      alert('Timer tujuan sedang dipakai. Gunakan TUKAR untuk saling tukar.');
+      return;
+    }
+    to.status = from.status;
+    to.elapsed = getElapsed(from);
+    to.lastStart = from.status === 'active' ? now : 0;
+    to.by = from.by || state.currentUser.username;
+    to.costPer10Min = from.costPer10Min;
+    from.status = 'idle';
+    from.elapsed = 0;
+    from.lastStart = 0;
+    from.by = '';
+  }
+  from.updatedAt = now;
+  to.updatedAt = now;
+  localActionAt = now;
+  pindahFrom = null;
+  closePindah();
+  saveState();
+  pushOnline(true);
+  renderTimers();
+  renderMoneyTop();
+  updateSaveButtonState();
+}
+function closePindah() {
+  document.getElementById('pindahModal').style.display = 'none';
+  pindahFrom = null;
+  pindahListCache = [];
+}
+
+function renderRecentHistory() {
+  const el = document.getElementById('recentHistory');
+  if (!el) return;
+  // Hanya stop milik akun yang sedang login (kasir sendiri-sendiri; owner lihat semua)
+  const me = state.currentUser?.username;
+  const recent = state.history.filter(h => {
+    if (!h || h.hidden || h.isKas) return false;
+    if (!state.currentUser) return false;
+    if (state.currentUser.role === 'owner') return true;
+    return h.by === me;
+  }).slice(0, 3);
+  if (!recent.length) {
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:#94a3b8">Belum ada yang di-stop</div>';
+    return;
+  }
+  let html = '';
+  recent.forEach(h => {
+    const play = new Date(h.playAt);
+    const stop = new Date(h.stopAt);
+    const playStr = play.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    const stopStr = stop.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+    html += `<div class="recent-item" style="flex-direction:column;align-items:stretch;gap:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><span class="box">${h.displayId}</span>
+          <span style="margin-left:8px;font-size:12px;color:#64748b">${getDisplayName(h.by)}</span></div>
+        <div class="cost">Rp ${(h.cost||0).toLocaleString('id-ID')}</div>
+      </div>
+      <div style="font-size:11px;color:#64748b;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="background:#dcfce7;color:#14532d;padding:2px 6px;border-radius:4px;font-weight:800">▶ ${playStr}</span>
+        <span style="background:#fee2e2;color:#7f1d1d;padding:2px 6px;border-radius:4px;font-weight:800">⏹ ${stopStr}</span>
+        <span>${formatTime(h.elapsed||0)}</span>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+function getDisplayName(u) {
+  const x = state.users.find(y => y.username === u);
+  return x ? x.displayName : (u||'-').toUpperCase();
+}
+
+// ===== FORM =====
+function initForm() {
+  document.getElementById('kas_tanggal').value = formatTglLengkap();
+  document.getElementById('kas_tanggal_hidden').value = getLocalTodayStr();
+  const awal = document.getElementById('kas_awal');
+  if (!awal.value || awal.value === '0') awal.value = 250000;
+  const app = document.getElementById('kas_aplikasi');
+  if (app && (app.value === '0' || app.value === '')) app.value = '';
+  app.placeholder = 'aplikasir harus diisi';
+  ketEntries = [];
+  renderKetList();
+  refreshRental();
+  hitungTotal();
+  updateSaveButtonState();
+}
+function getMyTodayRental() {
+  // Rental hari ini = yang di-STOP hari ini oleh kasir ini (meski play kemarin)
+  if (!state.currentUser) return 0;
+  const today = getLocalTodayStr();
+  return state.history
+    .filter(h => {
+      if (!h || h.hidden || h.isKas) return false;
+      if (h.by !== state.currentUser.username) return false;
+      const ts = h.stopAt || h.playAt;
+      return ts && getLocalDateStr(ts) === today;
+    })
+    .reduce((s, h) => s + (h.cost || 0), 0);
+}
+function refreshRental() {
+  const el = document.getElementById('kas_rental');
+  if (!el) return;
+  el.value = getMyTodayRental();
+  hitungTotal();
+}
+function hitungTotal() {
+  const awal = parseInt(document.getElementById('kas_awal')?.value || 250000) || 250000;
+  const rental = parseInt(document.getElementById('kas_rental')?.value || 0) || 0;
+  const aplikasi = parseInt(document.getElementById('kas_aplikasi')?.value || 0) || 0;
+  let ketTotal = ketEntries.reduce((s, k) => s + (parseInt(k.angka) || 0), 0);
+  const curA = parseInt((document.getElementById('kas_ket_angka')?.value || '0').replace(/\+/g, '')) || 0;
+  if (document.getElementById('kas_ket_text')?.value || curA !== 0) ketTotal += curA;
+  const total = awal + rental + aplikasi + ketTotal;
+  const disp = document.getElementById('kas_total_display');
+  if (disp) disp.textContent = 'Rp ' + total.toLocaleString('id-ID');
+}
+function tambahKet() {
+  const t = (document.getElementById('kas_ket_text').value || '').trim();
+  let raw = (document.getElementById('kas_ket_angka').value || '0').replace(/\+/g, '').trim();
+  const a = parseInt(raw) || 0;
+  if (!t && a === 0) { alert('Isi keterangan atau nominal dulu'); return; }
+  ketEntries.push({ text: t || '-', angka: a });
+  document.getElementById('kas_ket_text').value = '';
+  document.getElementById('kas_ket_angka').value = '';
+  renderKetList();
+  hitungTotal();
+}
+function hapusKet(i) {
+  ketEntries.splice(i, 1);
+  renderKetList();
+  hitungTotal();
+}
+function renderKetList() {
+  const listDiv = document.getElementById('ketList');
+  const items = document.getElementById('ketListItems');
+  const totalDiv = document.getElementById('ketTotalSum');
+  if (!ketEntries.length) {
+    listDiv.style.display = 'none'; items.innerHTML = '';
+    if (totalDiv) totalDiv.textContent = 'Total Ket: Rp 0';
+    return;
+  }
+  listDiv.style.display = 'block';
+  let sum = 0; let html = '';
+  ketEntries.forEach((k, i) => {
+    sum += k.angka;
+    const sign = k.angka < 0 ? '-' : '+';
+    html += `<div class="ket-item"><span>${i+1}. ${k.text}</span>
+      <span style="color:${k.angka<0?'#dc2626':'#16a34a'};font-weight:900">${sign} Rp ${Math.abs(k.angka).toLocaleString('id-ID')}</span>
+      <button class="hapus" onclick="hapusKet(${i})">X</button></div>`;
+  });
+  items.innerHTML = html;
+  if (totalDiv) totalDiv.textContent = 'Total Ket: Rp ' + sum.toLocaleString('id-ID') + (sum < 0 ? ' (MINUS)' : ' (PLUS)');
+}
+function getRunningOwnTimers() {
+  // Hanya timer milik akun yang login (bukan timer kasir lain yang hanya dilihat)
+  // Berlaku SEMUA kasir termasuk kasir1
+  if (!state.currentUser) return [];
+  const me = state.currentUser.username;
+  return state.timers.filter(t => {
+    if (t.status !== 'active' && t.status !== 'paused') return false;
+    // Owner: timer yang sedang dijalankan oleh owner
+    if (state.currentUser.role === 'owner') {
+      return t.by === me || t.by === 'owner';
+    }
+    // Kasir: timer assign ke dia ATAU by = dia
+    if (t.assignedTo === me) return true;
+    if (t.by === me) return true;
+    return false;
+  });
+}
+function isAlreadySavedToday() {
+  if (!state.currentUser) return false;
+  const tanggal = getLocalTodayStr();
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch(e) {}
+  return list.some(x => x.tanggal === tanggal && x.kasir === state.currentUser.username);
+}
+function updateSaveButtonState() {
+  const btn = document.getElementById('btnSimpanKas');
+  const banner = document.getElementById('formBanner');
+  if (!btn || !state.currentUser) return;
+  const running = getRunningOwnTimers();
+  const sudah = isAlreadySavedToday();
+  if (sudah) {
+    btn.disabled = true; btn.className = 'btn-simpan-kas sudah';
+    btn.textContent = '✅ SUDAH DISIMPAN HARI INI';
+    banner.innerHTML = `<div class="banner-sudah">🔒 SUDAH DISIMPAN HARI INI<br><small>Sehari hanya bisa simpan sekali.</small></div>`;
+    ['kas_awal','kas_aplikasi','kas_ket_text','kas_ket_angka'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+    return;
+  }
+  if (running.length > 0) {
+    const list = running.map(t => t.displayId).join(', ');
+    btn.disabled = true;
+    btn.setAttribute('disabled', 'disabled');
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.85';
+    btn.className = 'btn-simpan-kas running';
+    btn.textContent = '⏸ TIMER MASIH NYALA - STOP DULU';
+    banner.innerHTML = `<div class="banner-running">⏸ STOP TIMER DULU (akun ${state.currentUser.displayName})<br><b>${list}</b></div>`;
+    return;
+  }
+  btn.disabled = false;
+  btn.removeAttribute('disabled');
+  btn.style.pointerEvents = 'auto';
+  btn.style.opacity = '1';
+  btn.className = 'btn-simpan-kas';
+  btn.textContent = '💾 SIMPAN LAPORAN KAS';
+  banner.innerHTML = '';
+  ['kas_awal','kas_aplikasi','kas_ket_text','kas_ket_angka'].forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+  document.getElementById('kas_rental').readOnly = true;
+}
+function simpanKas() {
+  if (!state.currentUser) return;
+  const running = getRunningOwnTimers();
+  if (running.length > 0) {
+    alert('⏸ TIMER MASIH NYALA: ' + running.map(t => t.displayId).join(', ') + '\n\nHarus STOP dulu!');
+    updateSaveButtonState(); return;
+  }
+  if (isAlreadySavedToday()) {
+    alert('❌ SUDAH SIMPAN HARI INI\nSehari hanya boleh sekali.');
+    updateSaveButtonState(); return;
+  }
+  const appEl = document.getElementById('kas_aplikasi');
+  const appRaw = (appEl?.value || '').toString().trim();
+  if (appRaw === '') {
+    alert('❌ APLIKASIR HARUS DIISI\n(Boleh diisi 0)');
+    appEl.focus(); appEl.style.borderColor = '#ef4444'; return;
+  }
+  appEl.style.borderColor = '#f59e0b';
+
+  const tanggal = getLocalTodayStr();
+  const tglDisplay = formatTglLengkap();
+  const awal = parseInt(document.getElementById('kas_awal').value || 250000) || 250000;
+  const rental = parseInt(document.getElementById('kas_rental').value || 0) || 0;
+  const aplikasi = parseInt(appRaw) || 0;
+  let ketText = '', ketAngka = 0, ketList = [];
+  if (ketEntries.length > 0) {
+    ketList = [...ketEntries];
+    ketAngka = ketList.reduce((s, k) => s + (parseInt(k.angka) || 0), 0);
+    ketText = ketList.map(k => k.text + '(' + k.angka + ')').join(', ');
+  } else {
+    ketText = document.getElementById('kas_ket_text').value || '';
+    ketAngka = parseInt((document.getElementById('kas_ket_angka').value || '0').replace(/\+/g,'')) || 0;
+    if (ketText || ketAngka !== 0) ketList = [{ text: ketText || '-', angka: ketAngka }];
+  }
+  const total = awal + rental + aplikasi + ketAngka;
+  const now = new Date();
+  const jam = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+
+  const item = {
+    id: Date.now(), tanggal, tglDisplay, jam,
+    kasir: state.currentUser.username, kasirName: state.currentUser.displayName,
+    kasAwal: awal, rentalHp: rental, aplikasir: aplikasi,
+    ketText, ketAngka, ketList, totalAkhir: total, timestamp: now.toISOString()
+  };
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch(e) {}
+  list.unshift(item);
+  localStorage.setItem(LS_KAS, JSON.stringify(list));
+  // push langsung biar tablet <-> infinix sync total
+  try { pushOnline(true); } catch(e){}
+
+  state.history.unshift({
+    timerNum: 'KAS', displayId: 'KAS ' + tanggal + ' ' + jam,
+    by: state.currentUser.username, cost: rental,
+    playAt: new Date(tanggal).getTime(), stopAt: Date.now(),
+    elapsed: 0, hidden: false, isKas: true,
+    kasAwal: awal, aplikasir: aplikasi, ketText, ketAngka, ketList, totalAkhir: total, jam
+  });
+  saveState();
+
+  alert(`✅ KAS DISIMPAN\nTgl: ${tglDisplay} ${jam}\nKasir: ${item.kasirName}\nKas Awal: Rp ${awal.toLocaleString('id-ID')}\nRental: Rp ${rental.toLocaleString('id-ID')}\nAplikasir: Rp ${aplikasi.toLocaleString('id-ID')}\nKet: ${ketText||'-'} (Rp ${ketAngka.toLocaleString('id-ID')})\nTOTAL: Rp ${total.toLocaleString('id-ID')}`);
+
+  ketEntries = []; renderKetList();
+  document.getElementById('kas_ket_text').value = '';
+  document.getElementById('kas_ket_angka').value = '';
+  document.getElementById('kas_aplikasi').value = '';
+  updateSaveButtonState();
+  renderMoneyTop();
+}
+
+// ===== REKAP =====
+function initRekap() {
+  rekapState.date = getLocalTodayStr();
+  rekapState.mode = 'hari';
+  rekapState.akun = state.currentUser.username;
+  document.getElementById('rekapDate').type = 'date';
+  document.getElementById('rekapDate').value = rekapState.date;
+  document.getElementById('rekapDate').style.display = 'block';
+
+  const canSeeOthers = state.currentUser.role === 'owner' ||
+    state.users.some(u => u.role === 'kasir' && u.username !== state.currentUser.username && canSeeUser(state.currentUser, u.username));
+
+  // akun dropdown sesuai permission
+  const sel = document.getElementById('rekapAkun');
+  let opts = '';
+  if (state.currentUser.role === 'owner') {
+    opts = '<option value="all">👥 Semua Akun</option>';
+    state.users.filter(u => u.enabled !== false).forEach(u => {
+      opts += `<option value="${u.username}">${u.displayName}</option>`;
+    });
+  } else {
+    opts = `<option value="${state.currentUser.username}">${state.currentUser.displayName}</option>`;
+    state.users.filter(u => u.role === 'kasir' && u.username !== state.currentUser.username).forEach(u => {
+      if (canSeeUser(state.currentUser, u.username)) {
+        opts += `<option value="${u.username}">${u.displayName}</option>`;
+      }
+    });
+  }
+  sel.innerHTML = opts;
+  sel.value = state.currentUser.role === 'owner' ? 'all' : state.currentUser.username;
+
+  // Mode: kasir tanpa permission lihat orang lain → hanya HARI
+  document.querySelectorAll('.rekap-mode-btn').forEach(b => {
+    if (state.currentUser.role !== 'owner' && !canSeeOthers) {
+      b.style.display = (b.dataset.mode === 'hari') ? 'inline-block' : 'none';
+    } else {
+      b.style.display = 'inline-block';
+    }
+    b.classList.toggle('active', b.dataset.mode === 'hari');
+  });
+}
+
+function setRekapMode(mode) {
+  rekapState.mode = mode;
+  document.querySelectorAll('.rekap-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  const dateInp = document.getElementById('rekapDate');
+  const today = getLocalTodayStr();
+  if (mode === 'hari') {
+    dateInp.type = 'date'; dateInp.style.display = 'block'; dateInp.value = today;
+  } else if (mode === 'bulan') {
+    dateInp.type = 'month'; dateInp.style.display = 'block'; dateInp.value = today.slice(0, 7);
+  } else if (mode === 'tahun') {
+    dateInp.type = 'number'; dateInp.style.display = 'block';
+    dateInp.min = '2024'; dateInp.max = '2030'; dateInp.value = today.slice(0, 4);
+  } else {
+    dateInp.style.display = 'none';
+  }
+  rekapState.date = dateInp.value || today;
+  renderRekap();
+}
+
+function setRekapToday() {
+  setRekapMode('hari');
+  document.getElementById('rekapDate').value = getLocalTodayStr();
+  renderRekap();
+}
+
+function getKasList() {
+  let list = [];
+  let del = [];
+  try { list = JSON.parse(localStorage.getItem(LS_KAS) || '[]'); } catch(e) {}
+  try { del = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]'); } catch(e) {}
+  if (del.length) {
+    const delSet = new Set(del);
+    list = list.filter(x => !delSet.has(x.id));
+  }
+  return list;
+}
+
+function filterKasForRekap() {
+  const mode = rekapState.mode;
+  const dateVal = document.getElementById('rekapDate').value || rekapState.date;
+  const akun = document.getElementById('rekapAkun').value || 'all';
+  rekapState.date = dateVal;
+  rekapState.akun = akun;
+  const boxQ = getRekapBoxQuery();
+
+  const list = getKasList();
+  return list.filter(item => {
+    if (!item || !item.tanggal) return false;
+    if (!canSeeUser(state.currentUser, item.kasir)) return false;
+    if (akun !== 'all' && item.kasir !== akun) return false;
+
+    let ok = false;
+    if (mode === 'hari') ok = item.tanggal === dateVal;
+    else if (mode === 'bulan') ok = item.tanggal.slice(0, 7) === dateVal.slice(0, 7);
+    else if (mode === 'tahun') ok = item.tanggal.slice(0, 4) === String(dateVal).slice(0, 4);
+    else if (mode === 'semua') ok = true;
+    else ok = true;
+    if(!ok) return false;
+
+    if(boxQ){
+      const combo = `${item.ketText||''} ${item.kasirName||''} ${item.kasir||''} ${item.tanggal||''} ${item.totalAkhir||''}`.toLowerCase();
+      if(!combo.includes(boxQ.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+function renderRekap() {
+  const filtered = filterKasForRekap();
+  const grandTotal = filtered.reduce((s, x) => s + (x.totalAkhir || 0), 0);
+
+  const modeLabel = { hari: 'HARI', bulan: 'BULAN', tahun: 'TAHUN', semua: 'SEMUA' }[rekapState.mode] || 'HARI';
+  const akunLabel = rekapState.akun === 'all' ? 'Semua Akun' : getDisplayName(rekapState.akun);
+
+  document.getElementById('rekapBigTotal').innerHTML = `
+    <div class="label">💰 TOTAL ${modeLabel} • ${akunLabel}</div>
+    <div class="value">Rp ${grandTotal.toLocaleString('id-ID')}</div>
+    <div class="sub">${filtered.length} laporan • ${rekapState.date || 'Semua periode'}</div>
+  `;
+
+  const infoEl2 = document.getElementById('rekapSearchInfo');
+  const q2 = getRekapBoxQuery();
+  if(infoEl2){
+    if(q2) infoEl2.textContent = `🔍 Filter: "${q2}" • ${filtered.length} laporan`;
+    else infoEl2.textContent = `${filtered.length} laporan`;
+  }
+  const listEl = document.getElementById('rekapList');
+  if (filtered.length === 0) {
+    if(q2) listEl.innerHTML = `<div style="text-align:center;padding:30px;color:#94a3b8;font-weight:700">Tidak ada hasil untuk "${q2}"<br><button onclick="clearRekapBoxSearch()" style="margin-top:10px;padding:8px 14px;background:#0ea5e9;color:white;border:none;border-radius:8px;font-weight:800">Reset</button></div>`;
+    else listEl.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-weight:700">Belum ada laporan kas untuk filter ini</div>';
+    return;
+  }
+
+  // urutkan terbaru dulu
+  const sorted = [...filtered].sort((a, b) => (b.id || 0) - (a.id || 0));
+  let html = '';
+  sorted.forEach(item => {
+    const ketA = item.ketAngka || 0;
+    const ketStr = ketA !== 0
+      ? (ketA < 0 ? `- Rp ${Math.abs(ketA).toLocaleString('id-ID')}` : `+ Rp ${ketA.toLocaleString('id-ID')}`)
+      : 'Rp 0';
+    html += `
+    <div class="rekap-item">
+      <div class="head">
+        <span class="tgl">📅 ${item.tglDisplay || item.tanggal} ${item.jam || ''}</span>
+        <span class="akun">${item.kasirName || item.kasir}</span>
+      </div>
+      <div class="rows">
+        💵 Kas Awal: <b>Rp ${(item.kasAwal || 0).toLocaleString('id-ID')}</b><br>
+        📱 Rental HP: <b style="color:#14532d">Rp ${(item.rentalHp || 0).toLocaleString('id-ID')}</b><br>
+        📲 Aplikasir: <b style="color:#92400e">Rp ${(item.aplikasir || 0).toLocaleString('id-ID')}</b><br>
+        📝 Keterangan: <b>${item.ketText || '-'}</b> → <b style="color:${ketA<0?'#dc2626':'#16a34a'}">${ketStr}</b>
+      </div>
+      <div class="total-row">TOTAL: Rp ${(item.totalAkhir || 0).toLocaleString('id-ID')}</div>
+      ${state.currentUser && (state.currentUser.role === 'owner' || state.currentUser.username === item.kasir)
+        ? `<button class="hapus-btn" onclick="hapusKas(${item.id})">HAPUS</button>` : ''}
+    </div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+function hapusKas(id) {
+  if (!confirm('Hapus laporan kas ini?')) return;
+  let list = getKasList();
+  list = list.filter(x => x.id !== id);
+  localStorage.setItem(LS_KAS, JSON.stringify(list));
+  // tandai dihapus biar tidak balik lagi dari device lain
+  try {
+    let del = [];
+    try { del = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]'); } catch(e){}
+    if (!del.includes(id)) { del.push(id); localStorage.setItem(LS_KAS_DEL, JSON.stringify(del)); }
+  } catch(e){}
+  // juga hapus dari history isKas
+  state.history = state.history.filter(h => !(h.isKas && h.id === id));
+  saveState();
+  renderRekap();
+  updateSaveButtonState();
+  alert('Laporan dihapus');
+}
+
+// LAPORAN TIMER (sama V4)
+function openLaporan() {
+  laporanState.date = getLocalTodayStr(); laporanState.mode = 'hari'; laporanState.akun = state.currentUser.username;
+  document.getElementById('laporanDate').value = laporanState.date;
+  document.getElementById('laporanDate').type = 'date';
+  const sel = document.getElementById('laporanAkun');
+  let opts = '';
+  // Cek apakah kasir boleh lihat orang lain
+  const canSeeOthers = state.currentUser.role === 'owner' ||
+    state.users.some(u => u.role === 'kasir' && u.username !== state.currentUser.username && canSeeUser(state.currentUser, u.username));
+
+  if (state.currentUser.role === 'owner') {
+    opts = '<option value="all">👥 Semua</option>';
+    state.users.filter(u => u.enabled !== false).forEach(u => opts += `<option value="${u.username}">${u.displayName}</option>`);
+  } else {
+    opts = `<option value="${state.currentUser.username}">${state.currentUser.displayName}</option>`;
+    state.users.filter(u => u.role === 'kasir' && u.username !== state.currentUser.username).forEach(u => {
+      if (canSeeUser(state.currentUser, u.username)) {
+        opts += `<option value="${u.username}">${u.displayName}</option>`;
+      }
+    });
+  }
+  sel.innerHTML = opts;
+  sel.value = state.currentUser.role === 'owner' ? 'all' : state.currentUser.username;
+
+  // Mode buttons: kasir yang TIDAK bisa lihat orang lain → hanya HARI (tanggal bisa dipilih, default today)
+  const modeBtns = document.querySelectorAll('#laporanModeBtns .laporan-mode-btn');
+  modeBtns.forEach(b => {
+    if (state.currentUser.role !== 'owner' && !canSeeOthers) {
+      // Hanya tampilkan HARI
+      b.style.display = (b.dataset.mode === 'hari') ? 'inline-block' : 'none';
+    } else {
+      b.style.display = 'inline-block';
+    }
+    b.classList.toggle('active', b.dataset.mode === 'hari');
+  });
+  document.getElementById('laporanModal').style.display = 'flex';
+  renderLaporan();
+}
+function closeLaporan() { document.getElementById('laporanModal').style.display = 'none'; }
+function setLaporanMode(mode) {
+  laporanState.mode = mode;
+  document.querySelectorAll('#laporanModeBtns .laporan-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  const dateInp = document.getElementById('laporanDate');
+  const today = getLocalTodayStr();
+  if (mode === 'hari' || mode === 'minggu') { dateInp.type = 'date'; dateInp.value = today; }
+  else if (mode === 'bulan') { dateInp.type = 'month'; dateInp.value = today.slice(0,7); }
+  else { dateInp.type = 'number'; dateInp.value = today.slice(0,4); }
+  laporanState.date = dateInp.value;
+  renderLaporan();
+}
+function setLaporanToday() {
+  laporanState.mode = 'hari'; laporanState.date = getLocalTodayStr();
+  document.getElementById('laporanDate').type = 'date';
+  document.getElementById('laporanDate').value = laporanState.date;
+  document.querySelectorAll('#laporanModeBtns .laporan-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'hari'));
+  renderLaporan();
+}
+function filterHistoryByLaporan() {
+  const mode = laporanState.mode;
+  const dateVal = document.getElementById('laporanDate').value || laporanState.date;
+  const akun = document.getElementById('laporanAkun').value || 'all';
+  laporanState.date = dateVal; laporanState.akun = akun;
+  const boxQ = getLaporanBoxQuery();
+  return state.history.filter(h => {
+    if (!h || h.hidden || h.isKas) return false;
+    const ts = h.stopAt || h.playAt;
+    if (!ts) return false;
+    if (akun !== 'all' && h.by !== akun) return false;
+    if (!canSeeUser(state.currentUser, h.by)) return false;
+    const tgl = getLocalDateStr(ts);
+    let ok = false;
+    if (mode === 'hari') ok = tgl === dateVal;
+    else if (mode === 'minggu') { const r = getWeekRange(dateVal); ok = tgl >= r.start && tgl <= r.end; }
+    else if (mode === 'bulan') ok = tgl.slice(0,7) === dateVal.slice(0,7);
+    else if (mode === 'tahun') ok = tgl.slice(0,4) === String(dateVal).slice(0,4);
+    else ok = true;
+    if(!ok) return false;
+    if(boxQ && !matchesBoxSearch(h, boxQ)) return false;
+    return true;
+  });
+}
+function renderLaporan() {
+  const filtered = filterHistoryByLaporan();
+  const total = filtered.reduce((s,h) => s + (h.cost||0), 0);
+  const modeLabel = {hari:'HARI',minggu:'MINGGU',bulan:'BULAN',tahun:'TAHUN'}[laporanState.mode] || 'HARI';
+  const akunLabel = laporanState.akun === 'all' ? 'Semua' : getDisplayName(laporanState.akun);
+  document.getElementById('laporanTotalBig').innerHTML = `
+    <div style="font-size:12px;opacity:0.85">TOTAL ${modeLabel} • ${akunLabel}</div>
+    <div class="value">Rp ${total.toLocaleString('id-ID')}</div>
+    <div style="font-size:11px;opacity:0.8">${filtered.length} transaksi • ${laporanState.date}</div>`;
+  const per = {};
+  filtered.forEach(h => { per[h.by] = (per[h.by]||0) + (h.cost||0); });
+  let perHtml = '';
+  if (state.currentUser.role === 'owner' || laporanState.akun === 'all' || laporanState.akun === 'owner') {
+    perHtml += `<div class="laporan-akun-card"><div class="name">OWNER</div><div class="amt">Rp ${(per.owner||0).toLocaleString('id-ID')}</div></div>`;
+  }
+  state.users.filter(u => u.role === 'kasir' && u.enabled !== false).forEach(u => {
+    if (laporanState.akun !== 'all' && laporanState.akun !== u.username) return;
+    if (!canSeeUser(state.currentUser, u.username)) return;
+    perHtml += `<div class="laporan-akun-card"><div class="name">${u.displayName}</div><div class="amt">Rp ${(per[u.username]||0).toLocaleString('id-ID')}</div></div>`;
+  });
+  document.getElementById('laporanPerAkun').innerHTML = perHtml || '<div style="grid-column:1/-1;text-align:center;color:#94a3b8">Kosong</div>';
+  // info search
+  const infoEl = document.getElementById('laporanSearchInfo');
+  const q = getLaporanBoxQuery();
+  if(infoEl){
+    if(q) infoEl.textContent = `🔍 Filter BOX: "${q}" • ${filtered.length} hasil`;
+    else infoEl.textContent = `${filtered.length} transaksi`;
+  }
+  const listEl = document.getElementById('laporanList');
+  if (!filtered.length) { 
+    if(q) listEl.innerHTML = `<div style="text-align:center;padding:20px;color:#94a3b8">Tidak ada box cocok "${q}"<br><button onclick="clearLaporanBoxSearch()" style="margin-top:8px;padding:6px 12px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:800">Reset</button></div>`;
+    else listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">Kosong</div>'; 
+    return; 
+  }
+  const sorted = [...filtered].sort((a,b) => (b.stopAt||0) - (a.stopAt||0));
+  let html = '';
+  sorted.forEach(h => {
+    const play = new Date(h.playAt), stop = new Date(h.stopAt);
+    const pStr = play.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) + ' ' + play.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const sStr = stop.toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) + ' ' + stop.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    html += `<div class="laporan-item"><div class="top"><span><b>${h.displayId}</b> • ${getDisplayName(h.by)}</span>
+      <span style="color:#14532d;font-weight:900">Rp ${(h.cost||0).toLocaleString('id-ID')}</span></div>
+      <div class="meta"><span class="play">▶ ${pStr}</span><span class="stop">⏹ ${sStr}</span><span>${formatTime(h.elapsed||0)}</span></div></div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+// SETTINGS
+function openSettings() {
+  if (!state.currentUser || state.currentUser.role !== 'owner') { alert('Hanya OWNER'); return; }
+  renderSettingsUsers(); renderSettingsPermissions(); renderTimerAssign(); renderTimerEnableList();
+  document.getElementById('settingsModal').style.display = 'flex';
+}
+function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+function renderSettingsUsers() {
+  let html = '';
+  state.users.forEach((u,i) => {
+    const isOwner = u.role === 'owner';
+    html += `<div class="user-row" style="flex-direction:column;align-items:stretch;gap:6px">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+        <span class="uname">${u.displayName}</span>
+        <input type="text" id="disp_${i}" value="${u.displayName}" placeholder="Nama tampil">
+        <input type="password" id="pass_${i}" value="${u.password}" placeholder="Password">
+        ${!isOwner ? `<button type="button" onclick="hapusUser(${i})" style="padding:4px 8px;background:#fee2e2;border:1px solid #fecaca;color:#dc2626;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer">Hapus</button>` : ''}
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;font-size:12px;font-weight:700">
+        <label style="display:flex;align-items:center;gap:6px">Aktif
+          <label class="toggle"><input type="checkbox" id="en_${i}" ${u.enabled!==false?'checked':''}><span class="slider"></span></label>
+        </label>
+        ${!isOwner ? `<label style="display:flex;align-items:center;gap:6px">Wajib Password
+          <label class="toggle"><input type="checkbox" id="reqpass_${i}" ${u.requirePassword!==false?'checked':''}><span class="slider"></span></label>
+        </label>` : '<span style="color:#64748b;font-size:11px">Owner selalu wajib password</span>'}
+      </div>
+    </div>`;
+  });
+  html += `<div style="margin-top:10px;padding:12px;background:#f0f9ff;border:1px dashed #0ea5e9;border-radius:10px">
+    <div style="font-weight:900;font-size:12px;margin-bottom:8px;color:#0c4a6e">+ Tambah User Baru</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      <input type="text" id="newUserUsername" placeholder="username (huruf kecil)" style="padding:8px;border:1px solid #d4d4d4;border-radius:8px;font-weight:700;width:120px">
+      <input type="text" id="newUserDisplay" placeholder="Nama tampil" style="padding:8px;border:1px solid #d4d4d4;border-radius:8px;font-weight:700;width:120px">
+      <input type="password" id="newUserPass" placeholder="Password" style="padding:8px;border:1px solid #d4d4d4;border-radius:8px;font-weight:700;width:100px">
+      <button type="button" onclick="tambahUser()" style="padding:8px 14px;background:#22c55e;color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer">+ TAMBAH</button>
+    </div>
+  </div>`;
+  document.getElementById('settingsUsers').innerHTML = html;
+}
+function tambahUser() {
+  const un = (document.getElementById('newUserUsername')?.value || '').trim().toLowerCase().replace(/\s+/g,'_');
+  const dn = (document.getElementById('newUserDisplay')?.value || '').trim() || un.toUpperCase();
+  const pw = (document.getElementById('newUserPass')?.value || '').trim() || 'kasir123';
+  if (!un) { alert('Isi username dulu'); return; }
+  if (state.users.find(u => u.username === un)) { alert('Username sudah ada'); return; }
+  state.users.push({
+    username: un, password: pw, role: 'kasir', displayName: dn,
+    enabled: true, requirePassword: true
+  });
+  saveState();
+  renderSettingsUsers();
+  renderSettingsPermissions();
+  renderTimerAssign();
+  renderLoginOptions();
+  alert('User ' + dn + ' ditambahkan. Atur ceklist lihat/play di bawah.');
+}
+function hapusUser(i) {
+  const u = state.users[i];
+  if (!u || u.role === 'owner') return;
+  if (!confirm('Hapus user ' + u.displayName + '?')) return;
+  // lepaskan assign timer ke user ini
+  state.timers.forEach(t => { if (t.assignedTo === u.username) t.assignedTo = null; });
+  state.users.splice(i, 1);
+  saveState();
+  renderSettingsUsers();
+  renderSettingsPermissions();
+  renderTimerAssign();
+  renderLoginOptions();
+}
+function renderSettingsPermissions() {
+  const kasirs = state.users.filter(u => u.role === 'kasir' && u.enabled !== false);
+  let html = '<div style="font-size:11px;color:#64748b;margin-bottom:8px">2 toggle: <b>Lihat</b> (uang+timer) dan <b>Play/Stop</b>. Berlaku untuk semua user termasuk yang baru.</div>';
+  if (kasirs.length < 2) {
+    html += '<div style="color:#94a3b8;font-size:12px">Minimal 2 kasir untuk atur permission antar kasir.</div>';
+  } else {
+    kasirs.forEach(viewer => {
+      kasirs.forEach(target => {
+        if (viewer.username === target.username) return;
+        const seeKey = permKey(viewer.username, target.username, 'see');
+        const playKey = permKey(viewer.username, target.username, 'play');
+        const seeId = 'perm_see_' + viewer.username + '_' + target.username;
+        const playId = 'perm_play_' + viewer.username + '_' + target.username;
+        html += `<div class="perm-row">
+          <input type="checkbox" id="${seeId}" data-key="${seeKey}" ${state.permissions[seeKey]?'checked':''}>
+          <label for="${seeId}">${viewer.displayName} boleh <b>LIHAT</b> ${target.displayName}</label>
+        </div>
+        <div class="perm-row">
+          <input type="checkbox" id="${playId}" data-key="${playKey}" ${state.permissions[playKey]?'checked':''}>
+          <label for="${playId}">${viewer.displayName} boleh <b>PLAY/STOP</b> timer ${target.displayName}</label>
+        </div>`;
+      });
+    });
+  }
+  document.getElementById('settingsPermissions').innerHTML = html;
+}
+function renderTimerAssign() {
+  const kasirs = state.users.filter(u => u.role === 'kasir' && u.enabled !== false);
+  let html = '';
+  state.timers.forEach(t => {
+    let cls = 'off', label = t.displayId;
+    if (t.assignedTo) {
+      const idx = kasirs.findIndex(k => k.username === t.assignedTo);
+      cls = idx === 0 ? 'k1' : (idx === 1 ? 'k2' : 'owner');
+      label += ' · ' + (getDisplayName(t.assignedTo).slice(0, 8));
+    }
+    html += `<div class="timer-assign-item ${cls}" onclick="cycleAssign(${t.num})">${label}</div>`;
+  });
+  document.getElementById('timerAssignGrid').innerHTML = html;
+}
+function cycleAssign(num) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t) return;
+  const kasirs = state.users.filter(u => u.role === 'kasir' && u.enabled !== false);
+  if (!kasirs.length) { t.assignedTo = null; renderTimerAssign(); return; }
+  // cycle: null → kasir[0] → kasir[1] → ... → null
+  if (!t.assignedTo) {
+    t.assignedTo = kasirs[0].username;
+  } else {
+    const idx = kasirs.findIndex(k => k.username === t.assignedTo);
+    if (idx < 0 || idx >= kasirs.length - 1) t.assignedTo = null;
+    else t.assignedTo = kasirs[idx + 1].username;
+  }
+  t.updatedAt = Date.now();
+  renderTimerAssign();
+}
+function renderTimerEnableList() {
+  let html = '<div style="font-size:11px;color:#64748b;margin-bottom:8px">Tarif = Rp per <b>10 menit</b> - hitung mulai 3:01 = 1x tarif, 13:01 = 2x tarif (tanpa 500) (contoh 1000 atau 1500)</div>';
+  state.timers.forEach(t => {
+    const tarif = t.costPer10Min || 1000;
+    html += `<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px;font-weight:700;flex-wrap:wrap">
+      <input type="text" value="${t.displayId}" onchange="updateTimerId(${t.num},this.value)" style="width:52px;padding:4px 4px;border:1px solid #0ea5e9;border-radius:6px;font-size:12px;font-weight:900;text-align:center" title="Nomor/ID box">
+      <input type="text" value="${t.name}" onchange="updateTimerName(${t.num},this.value)" style="flex:1;min-width:60px;padding:4px 6px;border:1px solid #d4d4d4;border-radius:6px;font-size:12px" title="Nama box">
+      <input type="number" value="${tarif}" min="0" step="500" onchange="updateTimerTarif(${t.num},this.value)" style="width:72px;padding:4px 6px;border:2px solid #f59e0b;border-radius:6px;font-size:12px;font-weight:900;text-align:center;background:#fffbeb" title="Tarif Rp / 10 menit">
+      <label class="toggle" title="Aktif/Non-aktif"><input type="checkbox" ${t.enabled!==false?'checked':''} onchange="toggleTimerEnabled(${t.num},this.checked)"><span class="slider"></span></label>
+    </div>`;
+  });
+  document.getElementById('timerEnableList').innerHTML = html;
+}
+function updateTimerName(num, name) {
+  const t = state.timers.find(x => x.num === num);
+  if (t) { t.name = name || t.displayId; t.updatedAt = Date.now(); }
+}
+function updateTimerTarif(num, val) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t) return;
+  const n = parseInt(val);
+  t.costPer10Min = (isNaN(n) || n < 0) ? 1000 : n;
+  t.updatedAt = Date.now();
+  saveState();
+  renderTimers();
+}
+function updateTimerId(num, newId) {
+  const t = state.timers.find(x => x.num === num);
+  if (!t) return;
+  newId = (newId || '').trim().toUpperCase();
+  if (!newId) return;
+  if (state.timers.some(x => x.num !== num && x.displayId === newId)) {
+    alert('ID sudah dipakai box lain');
+    renderTimerEnableList();
+    return;
+  }
+  t.displayId = newId;
+  t.updatedAt = Date.now();
+  renderTimerAssign();
+  renderTimers();
+}
+function toggleTimerEnabled(num, checked) {
+  const t = state.timers.find(x => x.num === num);
+  if (t) { t.enabled = checked; t.updatedAt = Date.now(); }
+}
+function addManualBox() {
+  const id = (document.getElementById('newBoxId').value || '').trim().toUpperCase();
+  const name = (document.getElementById('newBoxName').value || '').trim() || ('Box ' + id);
+  if (!id) { alert('Isi ID dulu'); return; }
+  if (state.timers.find(t => t.displayId === id)) { alert('ID sudah ada'); return; }
+  const maxNum = state.timers.reduce((m,t) => Math.max(m, t.num), 0);
+  // Default tarif 1000; bisa diubah di list setelah ditambah
+  state.timers.push({ num: maxNum+1, displayId: id, name, status: 'idle', elapsed: 0, lastStart: 0, costPer10Min: 1000, by: '', enabled: true, assignedTo: null });
+  document.getElementById('newBoxId').value = ''; document.getElementById('newBoxName').value = '';
+  saveState();
+  renderTimerAssign(); renderTimerEnableList(); renderTimers();
+}
+function saveSettings() {
+  state.users.forEach((u,i) => {
+    const d = document.getElementById('disp_'+i), p = document.getElementById('pass_'+i), e = document.getElementById('en_'+i);
+    const rp = document.getElementById('reqpass_'+i);
+    if (d) u.displayName = d.value.trim() || u.username.toUpperCase();
+    if (p) u.password = p.value;
+    if (e) u.enabled = e.checked;
+    if (rp) u.requirePassword = rp.checked;
+    if (u.role === 'owner') u.requirePassword = true;
+  });
+  // Permission dinamis dari semua checkbox data-key
+  document.querySelectorAll('#settingsPermissions input[data-key]').forEach(cb => {
+    state.permissions[cb.dataset.key] = cb.checked;
+  });
+  // Jika play aktif → otomatis lihat aktif
+  const kasirs = state.users.filter(u => u.role === 'kasir');
+  kasirs.forEach(v => {
+    kasirs.forEach(t => {
+      if (v.username === t.username) return;
+      const playK = permKey(v.username, t.username, 'play');
+      const seeK = permKey(v.username, t.username, 'see');
+      if (state.permissions[playK]) state.permissions[seeK] = true;
+    });
+  });
+  usersEditedLocally = true; // izinkan push users ke Firebase
+  localActionAt = Date.now();
+  // tandai semua timer yang diubah settings ikut updatedAt
+  state.timers.forEach(t => { if (!t.updatedAt) t.updatedAt = localActionAt; });
+  saveState();
+  pushOnline(true);
+  renderLoginOptions(); renderAll(); closeSettings(); setTimeout(()=>autoSyncOnLogin(), 800);
+  alert('✅ Pengaturan disimpan');
+}
+
+let ticker = null;
+function startTicker() {
+  if (ticker) clearInterval(ticker);
+  ticker = setInterval(() => {
+    if (state.timers.some(t => t.status === 'active')) {
+      renderTimers();
+      if (document.getElementById('roomForm').classList.contains('active')) {
+        refreshRental(); updateSaveButtonState();
+      }
+    }
+  }, 1000);
+}
+function renderAll() {
+  renderMoneyTop(); setTimeout(setupMoneyBlur, 100); renderAkunFilter(); renderTimers(); renderRecentHistory();
+}
+
+
+function forceSyncTotal() {
+  if (!confirm('Force sync total laporan?\n\nAkan menggabungkan laporan dari Tablet & Infinix ke Firebase.')) return;
+  try {
+    // pastikan data lokal bersih dari yang dihapus
+    const payload = buildSyncPayload();
+    if (!firebaseDB) { alert('Belum ONLINE, cek internet'); return; }
+    lastPushAt = Date.now();
+    firebaseDB.ref().update({ [FB_PATH + '/ts']: payload.ts, [FB_PATH + '/deviceId']: payload.deviceId, [FB_PATH + '/timers']: payload.timers, [FB_PATH + '/users']: payload.users, [FB_PATH + '/history']: payload.history, [FB_PATH + '/permissions']: payload.permissions, [FB_PATH + '/kas']: payload.kas, [FB_PATH + '/kasDel']: payload.kasDel }).then(() => {
+      // tarik ulang sekali biar yakin merge
+      firebaseDB.ref(FB_PATH).once('value').then(snap => {
+        const data = snap.val();
+        if (data) applyRemoteState(data);
+        renderRekap();
+        alert('✅ FORCE SYNC BERHASIL\nTotal sekarang: ' + getKasList().length + ' laporan tergabung');
+      });
+    }).catch(e => alert('Gagal sync: ' + e.message));
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+
+function exportDebugKas() {
+  const kas = getKasList();
+  const allRaw = JSON.parse(localStorage.getItem(LS_KAS) || '[]');
+  const del = JSON.parse(localStorage.getItem(LS_KAS_DEL) || '[]');
+  const info = {
+    device: DEVICE_ID,
+    totalKasFiltered: kas.length,
+    totalKasRaw: allRaw.length,
+    deletedCount: del.length,
+    kasList: kas.slice(0,200),
+    deletedIds: del,
+    timersRunning: state.timers.filter(t=>t.status==='active').length,
+    historyCount: state.history.length,
+    online: isOnline
+  };
+  const blob = new Blob([JSON.stringify(info, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'debug-kas-' + getLocalTodayStr() + '-' + DEVICE_ID.slice(0,6) + '.json';
+  a.click();
+  alert('File debug terdownload\nKirim file itu ke aku ya kak');
+}
+function showDebugInfo() {
+  const kas = getKasList();
+  const total = kas.reduce((s,x)=>s+(x.totalAkhir||0),0);
+  alert('DEBUG INFO\nDevice: ' + DEVICE_ID + '\nOnline: ' + isOnline + '\nLaporan kas: ' + kas.length + '\nTotal akhir gabungan: Rp ' + total.toLocaleString('id-ID') + '\nHistory: ' + state.history.length);
+}
+
+function forcePullTotal() {
+  if (!firebaseDB) { alert('Belum ONLINE'); return; }
+  firebaseDB.ref(FB_PATH).once('value').then(snap => {
+    const data = snap.val();
+    if (!data) { alert('Firebase kosong'); return; }
+    if (confirm('Tarik data terbaru dari Firebase & gabung ke device ini?')) {
+      applyRemoteState(data);
+      renderRekap();
+      alert('✅ PULL BERHASIL - total: ' + getKasList().length);
+    }
+  });
+}
+
+
+let autoSyncInterval = null;
+function startAutoSyncReal() {
+  if (autoSyncInterval) clearInterval(autoSyncInterval);
+  // backup pull setiap 12 detik (utama realtime) — hemat bandwidth 6-8 HP
+  autoSyncInterval = setInterval(() => {
+    if (!firebaseDB || !isOnline) return;
+    firebaseDB.ref(FB_PATH).once('value').then(snap => {
+      const data = snap.val();
+      if (data && data.ts && data.ts > lastRemoteTs) {
+        applyRemoteState(data);
+        if (document.getElementById('roomRekap')?.classList.contains('active')) renderRekap();
+        if (document.getElementById('roomTimer')?.classList.contains('active')) renderMoneyTop();
+      }
+    }).catch(()=>{});
+  }, 12000);
+}
+function startAutoSync() { startAutoSyncReal(); }
+
+window.addEventListener('focus', () => {
+  if (state.currentUser) touchActivity();
+  if (isOnline && firebaseDB) {
+    autoSyncOnLogin();
+  }
+});
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    if (state.currentUser) touchActivity();
+    if (isOnline && firebaseDB) {
+      autoSyncOnLogin();
+    }
+  }
+});
+
+loadState();
+renderLoginOptions();
+checkExistingLogin();
+connectFirebase();
+// Retry restore session (jaga-jaga state.users belum siap / Firebase belum sync)
+setTimeout(function(){ if (!state.currentUser) checkExistingLogin(); }, 300);
+setTimeout(function(){ if (!state.currentUser) checkExistingLogin(); }, 1000);
+setTimeout(function(){ if (!state.currentUser) checkExistingLogin(); }, 2500);
+
+
+window.pauseBeepInterval=null; window.audioCtx=null;
+window.getAudioCtx=function(){ try{ if(!window.audioCtx) window.audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(window.audioCtx && window.audioCtx.state==='suspended') window.audioCtx.resume(); }catch(e){} return window.audioCtx; };
+window.playPauseTit=function(){ try{ const ctx=window.getAudioCtx(); if(!ctx) return; const now=ctx.currentTime; const o1=ctx.createOscillator(); const g1=ctx.createGain(); o1.frequency.value=1200; o1.connect(g1); g1.connect(ctx.destination); g1.gain.setValueAtTime(0.9,now); g1.gain.exponentialRampToValueAtTime(0.01,now+0.12); o1.start(now); o1.stop(now+0.12); const t2=now+0.2; const o2=ctx.createOscillator(); const g2=ctx.createGain(); o2.frequency.value=1200; o2.connect(g2); g2.connect(ctx.destination); g2.gain.setValueAtTime(0.9,t2); g2.gain.exponentialRampToValueAtTime(0.01,t2+0.12); o2.start(t2); o2.stop(t2+0.12); if(navigator.vibrate) navigator.vibrate([80,40,80]); }catch(e){} };
+window.startPauseBeepLoop=function(){ window.stopPauseBeepLoop(); window.playPauseTit(); window.pauseBeepInterval=setInterval(window.playPauseTit,1200); };
+window.stopPauseBeepLoop=function(){ if(window.pauseBeepInterval){ clearInterval(window.pauseBeepInterval); window.pauseBeepInterval=null; } };
+
+window.calcCost = function(elapsedSec, tarifPer10 = 1000) {
+  // ===== TARIF BARU V71 - TANPA 500 - KELIPATAN 1000 PER 10 MENIT =====
+  // 0 - 3:00 = Rp 0 (grace)
+  // 3:01 - 13:00 = Rp 1.000
+  // 13:01 - 23:00 = Rp 2.000
+  // 23:01 - 33:00 = Rp 3.000 dst kelipatan 10 menit
+  // Jika tarifPer10 di-setting 1500, maka kelipatan jadi 1500, 3000, dst
+  if (elapsedSec <= 180) return 0;
+  return Math.ceil((elapsedSec - 180) / 600) * tarifPer10;
+};
+// alias biar semua pemanggil lama tetap jalan
+window.calcCostOld = window.calcCost;
+
+
+window.fixLoginNow=function(){ try{ if(!state.users || state.users.length===0){ state.users=JSON.parse(JSON.stringify(DEFAULT_USERS)); } const sel=document.getElementById('loginUsername'); if(sel){ sel.innerHTML=''; state.users.filter(u=>u.enabled!==false).forEach(u=>{ const opt=document.createElement('option'); opt.value=u.username; opt.textContent=u.displayName; sel.appendChild(opt); }); } }catch(e){} };
+setTimeout(window.fixLoginNow,500); setTimeout(window.fixLoginNow,1500);
+
+// OWNER UNGU FIX
+window.updateOwnerBossStyle = function() {
+  try {
+    const moneyTop = document.getElementById('moneyTop');
+    if (!moneyTop) return;
+    if (state.filterAkun === 'owner' || state.filterAkun === state.users.find(u=>u.role==='owner')?.username) {
+      moneyTop.classList.add('owner-mode');
+    } else {
+      moneyTop.classList.remove('owner-mode');
+    }
+  } catch(e){}
+};
+
+
+// FIX PAUSE BUNYI TIT-TIT - HOOK KE TOGGLEPLAY
+window.updatePauseSound = function() {
+  try {
+    const anyPaused = state.timers.some(t=>t.status==='paused');
+    if (anyPaused) {
+      if (!window.pauseBeepInterval) window.startPauseBeepLoop();
+    } else {
+      window.stopPauseBeepLoop();
+    }
+  } catch(e){}
+};
+
+(function(){
+  const origTogglePlay = window.togglePlay;
+  window.togglePlay = function(num) {
+    const t = state.timers.find(x=>x.num===num);
+    const wasPaused = t && t.status==='active';
+    const wasIdle = t && t.status==='idle';
+    const result = origTogglePlay.apply(this, arguments);
+    setTimeout(function(){
+      try {
+        const t2 = state.timers.find(x=>x.num===num);
+        if (t2) {
+          if (t2.status === 'paused') {
+            window.startPauseBeepLoop();
+          } else if (t2.status === 'active') {
+            window.stopPauseBeepLoop();
+          }
+        }
+        window.updatePauseSound();
+      } catch(e){}
+    }, 100);
+    return result;
+  };
+  const origDoStop = window.doStop;
+  window.doStop = function(num) {
+    const result = origDoStop.apply(this, arguments);
+    setTimeout(function(){ window.stopPauseBeepLoop(); window.updatePauseSound(); }, 100);
+    return result;
+  };
+  setInterval(window.updatePauseSound, 1000);
+})();
+
+
+
+// 10 PILIHAN WARNA OWNER - WARNA MENGIKUTI OWNER SEMUA
+const THEMES = {
+  'theme-1-biru-tua': { name: '1. Biru Tua Klasik', bg: '#0c4a6e' },
+  'theme-2-hijau-pisang': { name: '2. Hijau Pisang Muda', bg: '#C5E86C' },
+  'theme-3-sunset': { name: '3. Sunset Orange', bg: '#FFF7ED' },
+  'theme-4-boss-black': { name: '4. Boss Black Gold', bg: '#111827' },
+  'theme-5-ocean': { name: '5. Ocean Mint', bg: '#CCFBF1' },
+  'theme-6-ungu-royal': { name: '6. Ungu Royal', bg: '#4C1D95' },
+  'theme-7-merah-api': { name: '7. Merah Api', bg: '#7F1D1D' },
+  'theme-8-pink-soft': { name: '8. Pink Soft', bg: '#FDF2F8' },
+  'theme-9-abu-elegant': { name: '9. Abu Elegant', bg: '#374151' },
+  'theme-10-kuning-emas': { name: '10. Kuning Emas', bg: '#FEF3C7' }
+};
+
+window.getTheme = function(){ 
+  try {
+    if (state && state.settings && state.settings.theme) return state.settings.theme;
+  } catch(e){}
+  return localStorage.getItem('timer_theme') || 'theme-2-hijau-pisang'; 
+};
+
+window.applyTheme = function(id, save){
+  document.body.classList.remove(
+    'theme-1-biru-tua','theme-2-hijau-pisang','theme-3-sunset','theme-4-boss-black','theme-5-ocean',
+    'theme-6-ungu-royal','theme-7-merah-api','theme-8-pink-soft','theme-9-abu-elegant','theme-10-kuning-emas'
+  );
+  document.body.classList.add(id);
+  localStorage.setItem('timer_theme', id);
+  if (save !== false) {
+    try {
+      if (!state.settings) state.settings = {};
+      state.settings.theme = id;
+      if (typeof saveState === 'function') saveState();
+    } catch(e){}
+  }
+  const lp = document.getElementById('loginPage');
+  if(lp){
+    const bg = {
+      'theme-1-biru-tua':'#0c4a6e', 'theme-2-hijau-pisang':'#C5E86C', 'theme-3-sunset':'#FFF7ED',
+      'theme-4-boss-black':'#111827', 'theme-5-ocean':'#CCFBF1', 'theme-6-ungu-royal':'#4C1D95',
+      'theme-7-merah-api':'#7F1D1D', 'theme-8-pink-soft':'#FDF2F8', 'theme-9-abu-elegant':'#374151',
+      'theme-10-kuning-emas':'#FEF3C7'
+    };
+    lp.style.background = bg[id] || '#C5E86C';
+    lp.style.backgroundColor = bg[id] || '#C5E86C';
+  }
+  document.querySelectorAll('.theme-btn').forEach(b=> b.classList.toggle('active', b.dataset.theme===id));
+};
+
+window.setTheme = function(id){ 
+  window.applyTheme(id, true);
+  alert('✅ Warna diganti ke: ' + (THEMES[id]?.name || id) + '\nWarna ini mengikuti owner semua - semua kasir akan ikut warna ini di device yang sama');
+};
+
+// Load theme from owner setting on login
+const origLoadState = window.loadState;
+if (origLoadState) {
+  const orig = origLoadState;
+  window.loadState = function(){
+    const r = orig.apply(this, arguments);
+    try {
+      const savedTheme = (state.settings && state.settings.theme) ? state.settings.theme : localStorage.getItem('timer_theme');
+      if (savedTheme) {
+        setTimeout(()=>window.applyTheme(savedTheme, false), 200);
+      }
+    } catch(e){}
+    return r;
+  };
+}
+
+// Also hook after login
+const origLogin = window.login;
+if (typeof origLogin === 'function') {
+  // don't override, just apply theme after login via event
+  setInterval(function(){
+    try {
+      if (state.currentUser && state.settings && state.settings.theme) {
+        const currentBodyTheme = document.body.className.match(/theme-[^\s]+/)?.[0];
+        if (currentBodyTheme !== state.settings.theme) {
+          window.applyTheme(state.settings.theme, false);
+        }
+      }
+    } catch(e){}
+  }, 1000);
+}
+
+setTimeout(function(){
+  const box = document.querySelector('#settingsModal .modal-box');
+  if(box && !document.getElementById('themeSelector')){
+    const div = document.createElement('div');
+    div.id='themeSelector';
+    div.className='settings-section';
+    div.innerHTML = `
+      <h4>🎨 PILIHAN WARNA OWNER (10 MACAM) - MENGIKUTI OWNER SEMUA</h4>
+      <div style="font-size:11px;color:#64748b;margin-bottom:8px">Owner ganti warna, semua kasir ikut warna ini (di device ini). Tema aktif: <b id="activeThemeName"></b></div>
+      <div class="theme-grid">
+        <button class="theme-btn t1" data-theme="theme-1-biru-tua" onclick="setTheme('theme-1-biru-tua')">1. BIRU TUA<br>Klasik</button>
+        <button class="theme-btn t2" data-theme="theme-2-hijau-pisang" onclick="setTheme('theme-2-hijau-pisang')">2. HIJAU PISANG<br>V42 ✅</button>
+        <button class="theme-btn t3" data-theme="theme-3-sunset" onclick="setTheme('theme-3-sunset')">3. SUNSET<br>Orange</button>
+        <button class="theme-btn t4" data-theme="theme-4-boss-black" onclick="setTheme('theme-4-boss-black')">4. BOSS BLACK<br>Hitam Emas</button>
+        <button class="theme-btn t5" data-theme="theme-5-ocean" onclick="setTheme('theme-5-ocean')">5. OCEAN<br>Biru Mint</button>
+        <button class="theme-btn t6" data-theme="theme-6-ungu-royal" onclick="setTheme('theme-6-ungu-royal')">6. UNGU ROYAL<br>Ungu</button>
+        <button class="theme-btn t7" data-theme="theme-7-merah-api" onclick="setTheme('theme-7-merah-api')">7. MERAH API<br>Merah</button>
+        <button class="theme-btn t8" data-theme="theme-8-pink-soft" onclick="setTheme('theme-8-pink-soft')">8. PINK SOFT<br>Pink</button>
+        <button class="theme-btn t9" data-theme="theme-9-abu-elegant" onclick="setTheme('theme-9-abu-elegant')">9. ABU ELEGANT<br>Abu</button>
+        <button class="theme-btn t10" data-theme="theme-10-kuning-emas" onclick="setTheme('theme-10-kuning-emas')">10. KUNING EMAS<br>Emas</button>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#16A34A;font-weight:800">✅ Warna mengikuti owner semua - kalau owner ganti, kasir login langsung ikut</div>
+    `;
+    box.insertBefore(div, box.firstChild);
+    const cur = window.getTheme();
+    window.applyTheme(cur, false);
+    const nameEl = document.getElementById('activeThemeName');
+    if (nameEl) nameEl.textContent = THEMES[cur]?.name || cur;
+  }
+}, 1000);
+
+window.addEventListener('load', function(){ 
+  setTimeout(()=>{
+    const t = window.getTheme();
+    window.applyTheme(t, false);
+  }, 600); 
+});
+
+</script>
+
+<script>
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('SW registered', reg.scope);
+    }).catch(err => console.log('SW fail', err));
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0c4a6e">
+<meta name="format-detection" content="telephone=no">
+<title>HALLOUYUN RENTAL</title>
+
+<!-- Manifest PWA (inline) biar bisa Add to Home Screen -->
+<link rel="manifest" href="./manifest-rental.json">
+
+<style>
+:root {
+  --primary: #0c4a6e;
+  --green: #22c55e;
+  --orange: #f97316;
+  --red: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0c4a6e;
+  color: white;
+}
+body { position: fixed; inset: 0; }
+
+/* ===== SELECT SCREEN ===== */
+#selectScreen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 12px 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.header .brand {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+.header .sub {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+.status-line {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+}
+#boxGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  flex: 1;
+}
+.box-item {
+  aspect-ratio: 1;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.box-item:active { transform: scale(0.93); }
+.box-item.free {
+  background: linear-gradient(145deg, #16a34a, #15803d);
+  border-color: #4ade80;
+}
+.box-item.busy {
+  background: #475569;
+  border-color: #64748b;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.box-item.locked-other {
+  background: #7f1d1d;
+  border-color: #f87171;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.box-item .small {
+  font-size: 10px;
+  font-weight: 800;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+.legend {
+  margin-top: 14px;
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+/* ===== DISPLAY SCREEN ===== */
+#displayScreen {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  background: #0c4a6e;
+  position: relative;
+}
+#displayScreen.active { display: flex; }
+
+.disp-top {
+  padding: 14px 16px 8px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.disp-brand {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  opacity: 0.7;
+}
+.disp-box {
+  font-size: clamp(48px, 18vw, 90px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin: 8px 0 4px;
+  letter-spacing: 2px;
+}
+.disp-status {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.disp-status.active { background: #16a34a; }
+.disp-status.paused { background: #ea580c; }
+.disp-status.idle { background: #64748b; }
+
+.disp-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 10px;
+}
+.disp-time {
+  font-size: clamp(52px, 20vw, 100px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.disp-cost {
+  font-size: clamp(36px, 12vw, 64px);
+  font-weight: 900;
+  background: rgba(255,255,255,0.15);
+  padding: 12px 28px;
+  border-radius: 20px;
+  border: 3px solid rgba(255,255,255,0.25);
+  min-width: 70%;
+  text-align: center;
+}
+
+.disp-bottom {
+  padding: 12px 16px 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.btn-keluar {
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  padding: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.25);
+  color: white;
+  font-weight: 900;
+  font-size: 15px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.btn-keluar:active { background: rgba(0,0,0,0.4); }
+
+/* Overlay pesan */
+#overlayMsg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#overlayMsg.show { display: flex; }
+.overlay-box {
+  background: white;
+  color: #0c4a6e;
+  border-radius: 18px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  font-weight: 800;
+}
+.overlay-box h3 { font-size: 18px; margin-bottom: 10px; }
+.overlay-box p { font-size: 14px; margin-bottom: 16px; line-height: 1.4; }
+.overlay-box button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.btn-ok { background: #0c4a6e; color: white; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-cancel { background: #e2e8f0; color: #334155; }
+
+/* Install banner */
+#installBanner {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fef08a;
+  color: #422006;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  z-index: 50;
+  text-align: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+}
+#installBanner.show { display: block; }
+#installBanner button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #0c4a6e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.online-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  margin-right: 4px;
+}
+.online-dot.on { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.35); }
+</style>
+</head>
+<body>
+
+<!-- SELECT SCREEN -->
+<div id="selectScreen">
+  <div class="header">
+    <div class="brand">HALLOUYUN</div>
+    <div class="sub">PILIH BOX RENTAL</div>
+  </div>
+  <div class="status-line">
+    <span id="onlineDot" class="online-dot"></span>
+    <span id="onlineText">Menghubungkan...</span>
+  </div>
+  <div id="boxGrid"></div>
+  <div class="legend">
+    Hijau = bisa dipilih<br>
+    Abu = sedang dipakai / nonaktif<br>
+    Merah = sudah dikunci HP lain<br>
+    Setelah pilih, layar terkunci 1 box saja
+  </div>
+</div>
+
+<!-- DISPLAY SCREEN -->
+<div id="displayScreen">
+  <div class="disp-top">
+    <div class="disp-brand">HALLOUYUN RENTAL</div>
+    <div class="disp-box" id="dispBox">--</div>
+    <div class="disp-status idle" id="dispStatus">SIAP</div>
+  </div>
+  <div class="disp-center">
+    <div class="disp-time" id="dispTime">00:00</div>
+    <div class="disp-cost" id="dispCost">Rp 0</div>
+  </div>
+  <div class="disp-bottom">
+    <button class="btn-keluar" id="btnKeluar" onclick="confirmKeluar()">KELUAR LAYAR</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlayMsg">
+  <div class="overlay-box">
+    <h3 id="ovTitle">Konfirmasi</h3>
+    <p id="ovText"></p>
+    <button class="btn-ok" id="ovBtnOk" style="display:none">OK</button>
+    <button class="btn-danger" id="ovBtnYes" style="display:none">YA, KELUAR</button>
+    <button class="btn-cancel" id="ovBtnNo" style="display:none">BATAL</button>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner">
+  📲 Pasang ke Home Screen biar jadi aplikasi murni (tanpa browser)
+  <br>
+  <button onclick="promptInstall()">PASANG SEKARANG</button>
+  <button onclick="hideInstall()" style="background:#94a3b8;margin-left:6px">Nanti</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ===== FIREBASE (sama dengan index kasir) =====
+const firebaseConfig = {
+  apiKey: "AIzaSyC5liJlwMnaA4RtjcUl4FmSVXVvr7Jh6Tw",
+  authDomain: "hallouyun-1fdf9.firebaseapp.com",
+  databaseURL: "https://hallouyun-1fdf9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hallouyun-1fdf9",
+  storageBucket: "hallouyun-1fdf9.firebasestorage.app",
+  messagingSenderId: "144671242841",
+  appId: "1:144671242841:web:74f8e6634fd4d3de0acf48",
+  measurementId: "G-G3VLZN18HX"
+};
+const FB_PATH = 'hallouyun/v15';
+const LOCK_PATH = 'hallouyun/rental_locks_v1';
+
+const DEVICE_ID = (() => {
+  try {
+    let id = localStorage.getItem('rental_device_id');
+    if (!id) {
+      id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem('rental_device_id', id);
+    }
+    return id;
+  } catch (e) { return 'r_' + Date.now(); }
+})();
+
+const LS_CLAIMED = 'rental_claimed_box';
+
+let firebaseDB = null;
+let isOnline = false;
+let timersMap = {};
+let locksMap = {};
+let claimedBox = null;   // displayId yang diklaim HP ini
+let ticker = null;
+let deferredPrompt = null;
+
+// ===== RUMUS SAMA PERSIS DENGAN INDEX KASIR (hanya untuk tampilan) =====
+// Tidak diubah-ubah. Hanya mirror.
+function calcCost(elapsedSec, tarifPer10 = 1000) {
+  if (elapsedSec <= 180) return 0;
+  return Math.ceil((elapsedSec - 180) / 600) * tarifPer10;
+}
+
+function formatTime(sec) {
+  sec = Math.max(0, Math.floor(sec || 0));
+  return String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+}
+
+function getElapsed(t) {
+  if (!t) return 0;
+  if (t.status === 'active' && t.lastStart) {
+    return (t.elapsed || 0) + Math.max(0, Math.floor((Date.now() - t.lastStart) / 1000));
+  }
+  return t.elapsed || 0;
+}
+
+// ===== FIREBASE =====
+function connectFirebase() {
+  try {
+    if (typeof firebase === 'undefined') {
+      setTimeout(connectFirebase, 600);
+      return;
+    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    firebaseDB = firebase.database();
+
+    firebaseDB.ref('.info/connected').on('value', s => {
+      isOnline = !!s.val();
+      updateOnlineUI();
+    });
+
+    // Listen timers
+    firebaseDB.ref(FB_PATH + '/timers').on('value', snap => {
+      const arr = snap.val() || [];
+      timersMap = {};
+      if (Array.isArray(arr)) {
+        arr.forEach(t => { if (t && t.displayId) timersMap[t.displayId] = t; });
+      } else if (typeof arr === 'object') {
+        Object.values(arr).forEach(t => { if (t && t.displayId) timersMap[t.displayId] = t; });
+      }
+      if (claimedBox) {
+        updateDisplay();
+      } else {
+        renderSelectGrid();
+      }
+    });
+
+    // Listen locks
+    firebaseDB.ref(LOCK_PATH).on('value', snap => {
+      locksMap = snap.val() || {};
+      if (claimedBox) {
+        // Cek apakah lock kita masih valid
+        const lock = locksMap[claimedBox];
+        if (!lock || lock.deviceId !== DEVICE_ID) {
+          // Owner atau HP lain lepas / ambil alih
+          forceRelease('Box dilepas dari pusat. Silakan pilih box lain.');
+        } else {
+          updateDisplay();
+        }
+      } else {
+        renderSelectGrid();
+      }
+    });
+
+  } catch (e) {
+    console.warn(e);
+    setTimeout(connectFirebase, 1500);
+  }
+}
+
+function updateOnlineUI() {
+  const dot = document.getElementById('onlineDot');
+  const txt = document.getElementById('onlineText');
+  if (dot) dot.classList.toggle('on', isOnline);
+  if (txt) txt.textContent = isOnline ? 'ONLINE' : 'OFFLINE - cek internet';
+}
+
+// ===== SELECT =====
+function renderSelectGrid() {
+  const grid = document.getElementById('boxGrid');
+  if (!grid) return;
+
+  // Urutan standar A-H, J-M (tanpa I) × 1-5
+  const letters = ['A','B','C','D','E','F','G','H','J','K','L','M'];
+  let html = '';
+
+  letters.forEach(L => {
+    for (let n = 1; n <= 5; n++) {
+      const id = L + n;
+      const t = timersMap[id];
+      const lock = locksMap[id];
+      const enabled = t ? (t.enabled !== false) : true;
+
+      let cls = 'free';
+      let label = '';
+      if (!enabled) {
+        cls = 'busy';
+        label = 'NONAKTIF';
+      } else if (lock && lock.deviceId && lock.deviceId !== DEVICE_ID) {
+        cls = 'locked-other';
+        label = 'DIKUNCI';
+      } else if (t && (t.status === 'active' || t.status === 'paused')) {
+        // Masih boleh dipilih, tapi kasih info
+        label = t.status === 'active' ? 'JALAN' : 'PAUSE';
+      }
+
+      html += `<div class="box-item ${cls}" onclick="tryClaim('${id}')">
+        ${id}
+        ${label ? `<div class="small">${label}</div>` : ''}
+      </div>`;
+    }
+  });
+  grid.innerHTML = html;
+}
+
+function tryClaim(boxId) {
+  if (!firebaseDB || !isOnline) {
+    showOverlay('Belum Online', 'Tunggu koneksi internet dulu.', true);
+    return;
+  }
+  const t = timersMap[boxId];
+  if (t && t.enabled === false) {
+    showOverlay('Box Nonaktif', 'Box ini ditutup dari pusat.', true);
+    return;
+  }
+  const lock = locksMap[boxId];
+  if (lock && lock.deviceId && lock.deviceId !== DEVICE_ID) {
+    showOverlay('Sudah Dikunci', 'Box ini sudah dipakai HP rental lain.', true);
+    return;
+  }
+
+  // Klaim
+  const payload = {
+    deviceId: DEVICE_ID,
+    claimedAt: Date.now(),
+    boxId: boxId
+  };
+  firebaseDB.ref(LOCK_PATH + '/' + boxId).set(payload)
+    .then(() => {
+      claimedBox = boxId;
+      try { localStorage.setItem(LS_CLAIMED, boxId); } catch(e){}
+      showDisplay();
+    })
+    .catch(err => {
+      showOverlay('Gagal', 'Gagal mengunci box. Coba lagi.', true);
+      console.warn(err);
+    });
+}
+
+// ===== DISPLAY =====
+function showDisplay() {
+  document.getElementById('selectScreen').style.display = 'none';
+  const ds = document.getElementById('displayScreen');
+  ds.style.display = 'flex';
+  ds.classList.add('active');
+  document.getElementById('dispBox').textContent = claimedBox || '--';
+  updateDisplay();
+  startTicker();
+  // Coba fullscreen
+  try {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(()=>{});
+    }
+  } catch(e){}
+}
+
+function updateDisplay() {
+  if (!claimedBox) return;
+  const t = timersMap[claimedBox];
+  const boxEl = document.getElementById('dispBox');
+  const timeEl = document.getElementById('dispTime');
+  const costEl = document.getElementById('dispCost');
+  const statusEl = document.getElementById('dispStatus');
+
+  if (!t) {
+    timeEl.textContent = '00:00';
+    costEl.textContent = 'Rp 0';
+    statusEl.textContent = 'MENUNGGU DATA';
+    statusEl.className = 'disp-status idle';
+    return;
+  }
+
+  const elapsed = getElapsed(t);
+  const cost = calcCost(elapsed, t.costPer10Min || 1000);
+
+  timeEl.textContent = formatTime(elapsed);
+  costEl.textContent = 'Rp ' + cost.toLocaleString('id-ID');
+
+  if (t.status === 'active') {
+    statusEl.textContent = 'SEDANG BERJALAN';
+    statusEl.className = 'disp-status active';
+    document.getElementById('displayScreen').style.background = '#065f46';
+  } else if (t.status === 'paused') {
+    statusEl.textContent = 'PAUSE';
+    statusEl.className = 'disp-status paused';
+    document.getElementById('displayScreen').style.background = '#9a3412';
+  } else {
+    statusEl.textContent = 'SIAP';
+    statusEl.className = 'disp-status idle';
+    document.getElementById('displayScreen').style.background = '#0c4a6e';
+  }
+}
+
+function startTicker() {
+  if (ticker) clearInterval(ticker);
+  ticker = setInterval(() => {
+    if (claimedBox) updateDisplay();
+  }, 1000);
+}
+
+// ===== KELUAR =====
+function confirmKeluar() {
+  showOverlay(
+    'Keluar dari Box?',
+    'Layar akan kembali ke pilihan box. Box ini akan dilepas kunci.',
+    false,
+    true
+  );
+}
+
+function doKeluar() {
+  hideOverlay();
+  if (claimedBox && firebaseDB) {
+    // Lepas kunci hanya jika kita yang punya
+    const lock = locksMap[claimedBox];
+    if (lock && lock.deviceId === DEVICE_ID) {
+      firebaseDB.ref(LOCK_PATH + '/' + claimedBox).remove().catch(()=>{});
+    }
+  }
+  claimedBox = null;
+  try { localStorage.removeItem(LS_CLAIMED); } catch(e){}
+  if (ticker) { clearInterval(ticker); ticker = null; }
+
+  document.getElementById('displayScreen').style.display = 'none';
+  document.getElementById('displayScreen').classList.remove('active');
+  document.getElementById('selectScreen').style.display = 'flex';
+  renderSelectGrid();
+
+  // Exit fullscreen
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+  } catch(e){}
+}
+
+function forceRelease(msg) {
+  claimedBox = null;
+  try { localStorage.removeItem(LS_CLAIMED); } catch(e){}
+  if (ticker) { clearInterval(ticker); ticker = null; }
+  document.getElementById('displayScreen').style.display = 'none';
+  document.getElementById('displayScreen').classList.remove('active');
+  document.getElementById('selectScreen').style.display = 'flex';
+  renderSelectGrid();
+  showOverlay('Box Dilepas', msg || 'Box ini sudah tidak lagi dikunci oleh HP ini.', true);
+}
+
+// ===== OVERLAY =====
+function showOverlay(title, text, onlyOk, isConfirm) {
+  document.getElementById('ovTitle').textContent = title;
+  document.getElementById('ovText').textContent = text;
+  const btnOk = document.getElementById('ovBtnOk');
+  const btnYes = document.getElementById('ovBtnYes');
+  const btnNo = document.getElementById('ovBtnNo');
+  btnOk.style.display = onlyOk ? 'block' : 'none';
+  btnYes.style.display = isConfirm ? 'block' : 'none';
+  btnNo.style.display = isConfirm ? 'block' : 'none';
+  document.getElementById('overlayMsg').classList.add('show');
+
+  btnOk.onclick = hideOverlay;
+  btnNo.onclick = hideOverlay;
+  btnYes.onclick = doKeluar;
+}
+function hideOverlay() {
+  document.getElementById('overlayMsg').classList.remove('show');
+}
+
+// ===== PWA / INSTALL =====
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Tampilkan banner kalau belum pernah dipasang
+  if (!window.matchMedia('(display-mode: standalone)').matches) {
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+
+function promptInstall() {
+  if (!deferredPrompt) {
+    // Fallback instruksi manual
+    showOverlay(
+      'Cara Pasang',
+      'Chrome → ketuk menu ⋮ → "Tambahkan ke layar utama" atau "Add to Home screen". Setelah itu buka dari ikon home, bukan dari browser.',
+      true
+    );
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    hideInstall();
+  });
+}
+function hideInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+}
+
+// Cegah zoom & gesture
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('dblclick', e => e.preventDefault());
+
+// ===== INIT =====
+function init() {
+  // Cek apakah sudah pernah klaim
+  try {
+    const saved = localStorage.getItem(LS_CLAIMED);
+    if (saved) {
+      claimedBox = saved;
+    }
+  } catch(e){}
+
+  connectFirebase();
+
+  // Tunggu data sebentar lalu tampilkan
+  setTimeout(() => {
+    if (claimedBox) {
+      // Pastikan lock masih milik kita, kalau tidak maka reset
+      const lock = locksMap[claimedBox];
+      if (lock && lock.deviceId === DEVICE_ID) {
+        showDisplay();
+      } else {
+        // Lock hilang / diambil orang → reset
+        claimedBox = null;
+        try { localStorage.removeItem(LS_CLAIMED); } catch(e){}
+        renderSelectGrid();
+      }
+    } else {
+      renderSelectGrid();
+    }
+  }, 1200);
+}
+
+init();
+
+// Kalau sudah standalone (dari home screen), sembunyikan banner
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+  hideInstall();
+}
+</script>
+
+<script>
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('SW registered', reg.scope);
+    }).catch(err => console.log('SW fail', err));
+  });
+}
+</script>
+
+</body>
+</html>
